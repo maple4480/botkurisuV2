@@ -448,6 +448,7 @@ async function play(guild, song) {
 
     //currentSongMessage.edit("Currently Playing: "+song.title);
 
+    //Do I need to encapsulate this in a try block?
     const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         .on('finish', () => {
             log("Current song ended.");

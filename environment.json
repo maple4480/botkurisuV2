@@ -1,0 +1,10 @@
+{
+
+    "botID": process.env.BOT_ID,
+    "GOOGLE_API":process.env.GOOGLE_API,
+    "token":process.env.BOT_TOKEN
+}
+
+
+
+  
