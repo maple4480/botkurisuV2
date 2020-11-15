@@ -8,9 +8,11 @@ const ytdl = require('ytdl-core-discord');
 const Youtube = require('simple-youtube-api');
 
 //Based on environment.
-const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
-const GOOGLE_API = process.env.GOOGLE_API;
-const token = process.env.BOT_TOKEN;
+const {
+    botID,
+    GOOGLE_API,
+    token
+} = require('./environment.json');
 
 const youtube = new Youtube(GOOGLE_API);
 
