@@ -22,6 +22,8 @@ var repeat = false; //If true play current song, until set again.
 var events = require('events');
 var eventHandler = new events.EventEmitter();
 
+var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
+
 //var currentSongMessage =""; //Contains a reference to the message that updates every time play runs.
 
 // var timeoutID; //NEW CODE
@@ -169,6 +171,9 @@ async function execute(message, serverQueue) {
         };
         queue.set(message.guild.id, queueContruct);
         log("\t\tQueue generated and set for this guild id: "+message.guild.id);
+
+        textChannel = message.channel;
+        log("Reference to the current text channel saved!");
 
         queueContruct.songs.push(song);
         log("\t\tSong added to queue: "+song.title);
@@ -440,8 +445,10 @@ async function play(guild, song) {
         // log("Initiated time out ");
         return;
     }
-    //clearTimeout(timeoutID);
+
     log(song.title + ' is now playing!');
+    textChannel.send(song.title + ' is now playing!');
+    
 
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
