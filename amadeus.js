@@ -88,7 +88,7 @@ client.on('message', (message) => {
     }
     else if (message.content.startsWith("`help")) {
         log("User requested help.");
-        display(message,'```You can currently use the following commands: \n\
+        display(message,'```Changed!You can currently use the following commands: \n\
             \`play [URL/Text to Search] \n\
             \`skip -Skips current song in queue \n\
             \`stop -Removes all song in queue \n\
