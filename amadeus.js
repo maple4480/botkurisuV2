@@ -32,14 +32,14 @@ var eventHandler = new events.EventEmitter();
 //     degen,
 //     steinGate,
 // } = require('./playlist.json');
-
+var pathname ="WRONG";
 var http = require('http');
 var url = require('url') ;
 var server = http.createServer(function (req, res) {   
     var hostname = req.headers.host; // hostname = 'localhost:8080'
-    var pathname = url.parse(req.url).pathname; // pathname = '/MyApp'
+    pathname = url.parse(req.url).pathname; // pathname = '/MyApp'
     console.log('http://' + hostname + pathname);
-    
+
     if (req.url == '/data') { //check the URL of the current request
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.write(JSON.stringify({ message: "Hello World"}));  
@@ -50,6 +50,7 @@ var server = http.createServer(function (req, res) {
 //When application starts do this:
 client.on('ready', () => {
     log('Bot is ready...Awaiting Input!');
+    log(pathname);
     client.user.setActivity(". For help: `help"); 
 
     server.listen(5000);
