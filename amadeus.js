@@ -377,21 +377,19 @@ async function execute(message, serverQueue) {
 }
 
 function skip(message, serverQueue) {
-    log('Request to enter skip.');
-    display(message,"Sorry but currently is not functioning!");
-    // try {
-    //     //DISCORD.JS V12.1.1 UPDATE
-    //     if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
-    //     //END DISCORD.JS V12.1.1 UPDATE
-    //     if (!serverQueue) return display(message, 'There is no song that I could skip!');
-    //     log("Now skipping current song.");
-    //     serverQueue.connection.dispatcher.end();
-    //     display(message, 'Skipping the current song!');
-    // }
-    // catch (err) {
-    //     log("ERROR: Unable to skip current song! " + err);
-    //     display(message, 'Unable to skip current song.');
-    // }
+    log('Starting skip method.');
+    try {
+        if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
+        if (!serverQueue) return display(message, 'There is no song that I could skip!');
+        log("Now skipping current song.");
+        serverQueue.connection.dispatcher.end();
+        display(message, 'Skipping the current song!');
+    }
+    catch (err) {
+        log("ERROR: Unable to skip current song! " + err);
+        display(message, 'Unable to skip current song.');
+    }
+    log('Finished skip method.');
     
 }
 
