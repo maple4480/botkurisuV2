@@ -526,28 +526,27 @@ function repeatSong(message, serverQueue) {
 }
 
 function getQueue(message, serverQueue) {
-    display(message,"Currently is not working.");
-    log("getQueue was called.");
-    // try {
-    //     var q = "";
-    //     for (var i = 0; i < serverQueue.songs.length; i++) {
-    //         if (i == 0) {
-    //             q += '[Currently Playing] ' + serverQueue.songs[i].title + '\n';
-    //         }
-    //         else {
-    //             q += '[' + i + '] ' + serverQueue.songs[i].title + '\n';
-    //         }
-    //         if (i == 10) {
-    //             q += '[...' + serverQueue.songs.length+' more]\n';
-    //             break;
-    //         }
-    //     }
-    //     display(message, '```Current Queue:\n' + q + '```');
-    // }
-    // catch (err) {
-    //     log("Error: Trying to get Queue");
-    //     display(message, "Queue is Empty");
-    // }
+    log("Starting getQueue method");
+    try {
+        var q = "";
+        for (var i = 0; i < serverQueue.songs.length; i++) {
+            if (i == 0) {
+                q += '[Currently Playing] ' + serverQueue.songs[i].title + '\n';
+            }
+            else {
+                q += '[' + i + '] ' + serverQueue.songs[i].title + '\n';
+            }
+            if (i == 10) {
+                q += '[...' + serverQueue.songs.length+' more]\n';
+                break;
+            }
+        }
+        display(message, '```Current Queue:\n' + q + '```');
+    }
+    catch (err) {
+        log("Error: Trying to get Queue: "+err.message);
+        display(message, "Queue is Empty");
+    }
 }
 function shuffle(message, serverQueue) {
     display(message,"Currently is not working.");
