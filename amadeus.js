@@ -451,8 +451,6 @@ async function play(guild, song) {
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
 
-    //currentSongMessage.edit("Currently Playing: "+song.title);
-
     //Do I need to encapsulate this in a try block?
     const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         .on('finish', () => {
@@ -587,9 +585,15 @@ function display(message, text) {
 function pause(message) {
     log("Requesting player pause.");
     try {
-        eventHandler.emit('pause'); 
-        display(message, "The player has been paused.");
-
+        if(playerStatus){
+            log("Confirmed player is currently playing. Now emitting the pause event.");
+            eventHandler.emit('pause'); 
+            display(message, "The player has been paused.");
+        }
+        else{
+            log("Player is not playing right now. Refusing to emit pause event.");
+            display(message, "There is nothing to pause as the player is not playing.");
+        }
     }
     catch (error) {
         log("ERROR: Trying to pause music. "+error.message);
