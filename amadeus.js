@@ -447,7 +447,7 @@ async function play(guild, song) {
     }
 
     log(song.title + ' is now playing!');
-    textChannel.send(song.title + ' is now playing!');
+    textChannel.send('```'+song.title + ' is now playing!```');
     
 
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
