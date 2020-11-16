@@ -33,11 +33,23 @@ var eventHandler = new events.EventEmitter();
 //     steinGate,
 // } = require('./playlist.json');
 
+var http = require('http');
+var server = http.createServer(function (req, res) {   
+   
+    if (req.url == '/data') { //check the URL of the current request
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ message: "Hello World"}));  
+            res.end();  
+    }
+});
 /*************************************************************************************************************************************/
 //When application starts do this:
 client.on('ready', () => {
     log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
+
+    server.listen(5000);
+    console.log('Node.js web server at port 5000 is running..')
 });
 
 /*************************************************************************************************************************************/
