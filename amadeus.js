@@ -34,8 +34,12 @@ var eventHandler = new events.EventEmitter();
 // } = require('./playlist.json');
 
 var http = require('http');
+var url = require('url') ;
 var server = http.createServer(function (req, res) {   
-   
+    var hostname = req.headers.host; // hostname = 'localhost:8080'
+    var pathname = url.parse(req.url).pathname; // pathname = '/MyApp'
+    console.log('http://' + hostname + pathname);
+    
     if (req.url == '/data') { //check the URL of the current request
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.write(JSON.stringify({ message: "Hello World"}));  
