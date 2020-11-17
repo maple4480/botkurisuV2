@@ -660,7 +660,7 @@ client.on('ready', () => {
         title: "test",
         url: "URL"
     };
-    this.addDBrow(song);
+    addDBrow(song);
 });
 
 client.login(token);
