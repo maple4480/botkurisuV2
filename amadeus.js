@@ -638,13 +638,21 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function addDBrow(obj){
-    var one = userRef.child("songs");
+    //'songs' is child of the parent
+    var one = userRef.child("violet");
+    //Check if url exists already in database if so just increment count by 1 otherwise 0
+    one.once(obj.URL).then(function(snapshot) {
+        var count = (snapshot.val() && snapshot.val().count) || 0;
+        obj['count'] = count;
+    });
+
+    //var one = userRef.child("violet");
     one.update(obj,(err)=>{
         if(err){
-            console.log("Something went wrong: "+err)
+            console.log("Song removed from database: "+err)
         }
         else{
-            console.log("sucessfull: "+err)
+            console.log("Song added to database: "+err)
         }
     });
 }
