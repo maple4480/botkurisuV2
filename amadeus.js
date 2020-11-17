@@ -3,9 +3,17 @@ const client = new Discord.Client();
 
 
 const ytdl = require('ytdl-core-discord');
-//const ytpl = require('ytpl');
-
 const Youtube = require('simple-youtube-api');
+
+//Database
+const admin = require('firebase-admin');
+admin.initializeApp({
+    credential: admin.credential.cert(process.env.SERVICE_ACCOUNT),
+    databaseURL: "https://kurisudata.firebaseio.com"
+    //authDomain:
+});
+var db=admin.database();
+var userRef=db.ref("list")
 
 //Based on environment.
 const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
@@ -40,6 +48,13 @@ var textChannel; //Keep a reference to the text channel, the queueConstruct was 
 client.on('ready', () => {
     log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
+
+    const song = {
+        id: 123,
+        title: "test",
+        url: "URL"
+    };
+    this.addDBrow(song);
 });
 
 /*************************************************************************************************************************************/
@@ -455,6 +470,7 @@ async function play(guild, song) {
     const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         .on('finish', () => {
             log("Current song ended.");
+            log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
             if (serverQueue.voiceChannel.members.array().length <= 1
                 || serverQueue.voiceChannel.members.get(botID) === undefined) {
                 log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
@@ -633,7 +649,17 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-
+function addDBrow(obj){
+    var one = userRef.child(obj.roll);
+    one.update(obj,(err)=>{
+        if(err){
+            console.log("Something went wrong: "+err.message)
+        }
+        else{
+            console.log("sucessfull: "+err.message)
+        }
+    });
+}
 client.login(token);
 
 
