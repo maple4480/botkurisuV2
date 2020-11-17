@@ -43,19 +43,7 @@ var textChannel; //Keep a reference to the text channel, the queueConstruct was 
 //     steinGate,
 // } = require('./playlist.json');
 
-/*************************************************************************************************************************************/
-//When application starts do this:
-client.on('ready', () => {
-    log('Bot is ready...Awaiting Input!');
-    client.user.setActivity(". For help: `help"); 
 
-    const song = {
-        id: 123,
-        title: "test",
-        url: "URL"
-    };
-    this.addDBrow(song);
-});
 
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
@@ -660,6 +648,21 @@ function addDBrow(obj){
         }
     });
 }
+
+/*************************************************************************************************************************************/
+//When application starts do this:
+client.on('ready', () => {
+    log('Bot is ready...Awaiting Input!');
+    client.user.setActivity(". For help: `help"); 
+
+    const song = {
+        id: 123,
+        title: "test",
+        url: "URL"
+    };
+    this.addDBrow(song);
+});
+
 client.login(token);
 
 
