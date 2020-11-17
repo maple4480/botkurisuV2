@@ -638,7 +638,7 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function addDBrow(obj){
-    var one = userRef.child(obj.roll);
+    var one = userRef.child(obj.song);
     one.update(obj,(err)=>{
         if(err){
             console.log("Something went wrong: "+err.message)
