@@ -639,7 +639,7 @@ function log(msg){
 }
 function addDBrow(obj){
     //'songs' is child of the parent
-    var one = userRef.child(obj.URL);
+    var one = userRef.child(obj.url);
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value").then(function(snapshot) {
         var count = (snapshot.val() && snapshot.val().count) || 0;
