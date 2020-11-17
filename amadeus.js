@@ -8,7 +8,7 @@ const Youtube = require('simple-youtube-api');
 //Database
 const admin = require('firebase-admin');
 admin.initializeApp({
-    credential: admin.credential.cert(process.env.SERVICE_ACCOUNT),
+    credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
     databaseURL: "https://kurisudata.firebaseio.com"
     //authDomain:
 });
