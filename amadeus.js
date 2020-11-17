@@ -638,13 +638,13 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function addDBrow(obj){
-    var one = userRef.child(obj.url);
+    var one = userRef.child("songs");
     one.update(obj,(err)=>{
         if(err){
-            console.log("Something went wrong: "+err.message)
+            console.log("Something went wrong: "+err)
         }
         else{
-            console.log("sucessfull: "+err.message)
+            console.log("sucessfull: "+err)
         }
     });
 }
