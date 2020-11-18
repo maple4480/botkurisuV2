@@ -639,7 +639,7 @@ function log(msg){
 }
 function addDBrow(obj){
     //'obj.url' is child of the parent
-    var one = userRef.child(obj.url);
+    var one = userRef.child(obj.id);
     
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
@@ -667,7 +667,7 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 124,
+        id: 125,
         title: "test",
         url: "google.com"
     };
