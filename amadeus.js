@@ -643,6 +643,7 @@ function DB_add(obj){
     var count =1;
 
     var numberOfCount = parseInt(DB_Exist(obj));
+    console.log("DB_Exist function returned: "+numberOfCount);
     if( numberOfCount > 0 ){
         console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount);
         count = numberOfCount+1;
