@@ -474,12 +474,12 @@ async function play(guild, song) {
         currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
         log("Trying to set up reacts");
         try{
-            log("Trying to set up reacts1");
-            await currentSongPlayingMessage.react("▶️");
-            log("Trying to set up reacts2");
+            log("React: Trying to set up Pause");
             await currentSongPlayingMessage.react("⏸");
-            log("Trying to set up reacts3");
+            log("React: Trying to set up Stop");
             await currentSongPlayingMessage.react("🛑");
+            log("React: Trying to set up Repeat");
+            await currentSongPlayingMessage.react("🔄");
         }catch(error){
             log("Problem with reacts: "+error.message);
         }
@@ -503,7 +503,7 @@ async function play(guild, song) {
             .on('finish', () => {
                 log("Current song ended.");
                 currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
-                //currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                 if (serverQueue.voiceChannel.members.array().length <= 1
@@ -548,6 +548,18 @@ async function play(guild, song) {
             log("Pausing player.");
             dispatcher.pause();
             currentSongPlayingMessage.edit('```'+song.title + ' is paused.```');
+            try{
+                log("Trying to set up reacts");
+                log("React: Trying to set up Play");
+                await currentSongPlayingMessage.react("▶️");
+                log("React: Trying to set up Stop");
+                await currentSongPlayingMessage.react("🛑");
+                log("React: Trying to set up Repeat");
+                await currentSongPlayingMessage.react("🔄");
+            }catch(error){
+                log("Problem with reacts: "+error.message);
+            }
+            
         });
 
         log('Listening for resume events.');
@@ -555,6 +567,17 @@ async function play(guild, song) {
             log("Resuming player.");
             dispatcher.resume();
             currentSongPlayingMessage.edit('```'+song.title + ' is now playing!```');
+            try{
+                log("Trying to set up reacts");
+                log("React: Trying to set up Pause");
+                await currentSongPlayingMessage.react("⏸");
+                log("React: Trying to set up Stop");
+                await currentSongPlayingMessage.react("🛑");
+                log("React: Trying to set up Repeat");
+                await currentSongPlayingMessage.react("🔄");
+            }catch(error){
+                log("Problem with reacts: "+error.message);
+            }
         });
     }catch(error){
         log("Error with dispatcher: "+error.message);
