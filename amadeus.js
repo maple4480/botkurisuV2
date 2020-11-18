@@ -32,10 +32,6 @@ var repeat = false; //If true play current song, until set again.
 var events = require('events');
 var eventHandler = new events.EventEmitter();
 
-eventHandler.on('pause', function () {
-    log("This should not run!");
-});
-
 var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 //If dispatcher errors out will try this many number of times before giving up.
@@ -517,7 +513,8 @@ async function play(guild, song) {
         log('Setting song volume to 50%');
         dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-        eventHandler = new events.EventEmitter(); //Reset events so all previous .on() will not work.
+        log('Resetting eventHandler to listen to new events.');
+        eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
     
         log('Listening for stop events.');
         eventHandler.on('stop', function () {
