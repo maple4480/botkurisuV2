@@ -647,7 +647,7 @@ function addDBrow(obj){
         var count = (snapshot.val() && snapshot.val().count) || 0;
         console.log("This is the value of var count: "+ count);
         console.log("Snapshot.val() is:  "+snapshot.val());
-        console.log("This is the current count: "+snapshot.val().count);
+        console.log("This is the current count: "+snapshot.val().url);
         obj.count = count+1;
     });
 
