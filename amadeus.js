@@ -539,7 +539,7 @@ async function play(guild, song) {
             //Try to play next song.
             tryThisManyTimes =3;
             serverQueue.songs.shift();
-            play(guild,song);
+            play(guild, serverQueue.songs[0]);
 
         }
     }
