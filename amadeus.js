@@ -644,8 +644,9 @@ function DB_add(obj){
 
     var numberOfCount = parseInt(DB_Exist(obj));
     if( numberOfCount > 0 ){
-        console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount+" 1 ");
+        console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount);
         count = numberOfCount+1;
+        console.log("count is now set to: "+count);
     }
 
     var newData = {
@@ -658,10 +659,10 @@ function DB_add(obj){
     //Updates the Database
     one.update(newData,(err)=>{
         if(err){
-            console.log("Song removed from database: "+err)
+            console.log("Error with update: "+err)
         }
         else{
-            console.log("Song added to database: "+err)
+            console.log("Song added to database.")
         }
     });
 
@@ -669,7 +670,7 @@ function DB_add(obj){
 //if exists in DB return >0 count otherwise return 0
 function DB_Exist(obj){
     var one = userRef.child(obj.id);
-    console.log("Scanning database for: "+obj.id);
+    console.log("Scanning database for song ID: "+obj.id);
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
