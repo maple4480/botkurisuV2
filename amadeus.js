@@ -3,14 +3,24 @@ const client = new Discord.Client();
 
 
 const ytdl = require('ytdl-core-discord');
-//const ytpl = require('ytpl');
-
 const Youtube = require('simple-youtube-api');
+
+//Database
+const admin = require('firebase-admin');
+admin.initializeApp({
+    credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
+    databaseURL: "https://kurisudata.firebaseio.com"
+});
+
 
 //Based on environment.
 const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
 const GOOGLE_API = process.env.GOOGLE_API;
 const token = process.env.BOT_TOKEN;
+const dbRef = process.env.DB_REFERENCE;
+
+var db=admin.database();
+var userRef=db.ref(dbRef);
 
 const youtube = new Youtube(GOOGLE_API);
 
@@ -21,6 +31,8 @@ var repeat = false; //If true play current song, until set again.
 //Used for stop,pause, and resume functionality to reach dispatcher
 var events = require('events');
 var eventHandler = new events.EventEmitter();
+
+var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 //var currentSongMessage =""; //Contains a reference to the message that updates every time play runs.
 
@@ -34,18 +46,15 @@ var eventHandler = new events.EventEmitter();
 // } = require('./playlist.json');
 
 
-/*************************************************************************************************************************************/
-//When application starts do this:
-client.on('ready', () => {
-    log('Bot is ready...Awaiting Input!');
-    client.user.setActivity(". For help: `help"); 
-
-});
 
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
 client.on('message', (message) => {
     if (message.author.bot) return;
+    if (message.content.startsWith("-play")) {
+        gatherDataOnOtherBots(message);
+        return;
+    }
     if (!message.content.startsWith("`")) return;
 
     const serverQueue = queue.get(message.guild.id);
@@ -158,6 +167,14 @@ async function execute(message, serverQueue) {
     };
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 
+    try{
+        DB_add(song);
+    }catch(error)
+    {
+        console.log("ERROR unable to update database.");
+    }
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
+
     log("Checking if a queue exists for this guild id: "+message.guild.id);
     if (queue.get(message.guild.id) == null) {
         log("\tqueue does not exist for this guild id: "+message.guild.id);
@@ -171,6 +188,9 @@ async function execute(message, serverQueue) {
         };
         queue.set(message.guild.id, queueContruct);
         log("\t\tQueue generated and set for this guild id: "+message.guild.id);
+
+        textChannel = message.channel;
+        log("Reference to the current text channel saved!");
 
         queueContruct.songs.push(song);
         log("\t\tSong added to queue: "+song.title);
@@ -374,21 +394,19 @@ async function execute(message, serverQueue) {
 }
 
 function skip(message, serverQueue) {
-    log('Request to enter skip.');
-    display(message,"Sorry but currently is not functioning!");
-    // try {
-    //     //DISCORD.JS V12.1.1 UPDATE
-    //     if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
-    //     //END DISCORD.JS V12.1.1 UPDATE
-    //     if (!serverQueue) return display(message, 'There is no song that I could skip!');
-    //     log("Now skipping current song.");
-    //     serverQueue.connection.dispatcher.end();
-    //     display(message, 'Skipping the current song!');
-    // }
-    // catch (err) {
-    //     log("ERROR: Unable to skip current song! " + err);
-    //     display(message, 'Unable to skip current song.');
-    // }
+    log('Starting skip method.');
+    try {
+        if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
+        if (!serverQueue) return display(message, 'There is no song that I could skip!');
+        log("Now skipping current song.");
+        serverQueue.connection.dispatcher.end();
+        display(message, 'Skipping the current song!');
+    }
+    catch (err) {
+        log("ERROR: Unable to skip current song! " + err);
+        display(message, 'Unable to skip current song.');
+    }
+    log('Finished skip method.');
     
 }
 
@@ -442,18 +460,19 @@ async function play(guild, song) {
         // log("Initiated time out ");
         return;
     }
-    //clearTimeout(timeoutID);
+
     log(song.title + ' is now playing!');
+    textChannel.send('```'+song.title + ' is now playing!```');
+    
 
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
-
-    //currentSongMessage.edit("Currently Playing: "+song.title);
 
     //Do I need to encapsulate this in a try block?
     const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         .on('finish', () => {
             log("Current song ended.");
+            log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
             if (serverQueue.voiceChannel.members.array().length <= 1
                 || serverQueue.voiceChannel.members.get(botID) === undefined) {
                 log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
@@ -528,28 +547,27 @@ function repeatSong(message, serverQueue) {
 }
 
 function getQueue(message, serverQueue) {
-    display(message,"Currently is not working.");
-    log("getQueue was called.");
-    // try {
-    //     var q = "";
-    //     for (var i = 0; i < serverQueue.songs.length; i++) {
-    //         if (i == 0) {
-    //             q += '[Currently Playing] ' + serverQueue.songs[i].title + '\n';
-    //         }
-    //         else {
-    //             q += '[' + i + '] ' + serverQueue.songs[i].title + '\n';
-    //         }
-    //         if (i == 10) {
-    //             q += '[...' + serverQueue.songs.length+' more]\n';
-    //             break;
-    //         }
-    //     }
-    //     display(message, '```Current Queue:\n' + q + '```');
-    // }
-    // catch (err) {
-    //     log("Error: Trying to get Queue");
-    //     display(message, "Queue is Empty");
-    // }
+    log("Starting getQueue method");
+    try {
+        var q = "";
+        for (var i = 0; i < serverQueue.songs.length; i++) {
+            if (i == 0) {
+                q += '[Currently Playing] ' + serverQueue.songs[i].title + '\n';
+            }
+            else {
+                q += '[' + i + '] ' + serverQueue.songs[i].title + '\n';
+            }
+            if (i == 10) {
+                q += '[...' + serverQueue.songs.length+' more]\n';
+                break;
+            }
+        }
+        display(message, '```Current Queue:\n' + q + '```');
+    }
+    catch (err) {
+        log("Error: Trying to get Queue: "+err.message);
+        display(message, "Queue is Empty");
+    }
 }
 function shuffle(message, serverQueue) {
     display(message,"Currently is not working.");
@@ -585,9 +603,15 @@ function display(message, text) {
 function pause(message) {
     log("Requesting player pause.");
     try {
-        eventHandler.emit('pause'); 
-        display(message, "The player has been paused.");
-
+        if(playerStatus){
+            log("Confirmed player is currently playing. Now emitting the pause event.");
+            eventHandler.emit('pause'); 
+            display(message, "The player has been paused.");
+        }
+        else{
+            log("Player is not playing right now. Refusing to emit pause event.");
+            display(message, "There is nothing to pause as the player is not playing.");
+        }
     }
     catch (error) {
         log("ERROR: Trying to pause music. "+error.message);
@@ -627,6 +651,114 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
+async function gatherDataOnOtherBots(message){
+    log('Starting gatherDataOnOtherBots method.');
+
+    log('Cleaning argument.');
+    const args = message.content.split(' ');
+    if (args[1] === undefined) {
+        log('No argument received.');
+        return;
+    }
+    log('Args: '+args);
+    const url = args[1].replace(/<(.+)>/g, '$1');
+    const searchString = args.slice(1).join(' ');
+
+    log('\targs: '+args+' \n\tURL: '+url+' \n\tsearchString: '+ searchString+'\nCleaned song argument.');
+    //Currently only allows one youtube video to play.
+    log('Attemping to gather information on video.');
+    try {
+        var video = await youtube.getVideo(url);
+    }
+    catch (error) {
+        log("This may not be a URL link: "+searchString);
+        log("Error: "+error.message);
+
+        try {
+            log("Attemping to search with arguments: "+searchString);
+            var videos = await youtube.searchVideos(searchString, 1);
+            var video = await youtube.getVideoByID(videos[0].id);
+            log("Video found: "+video.id);
+        }
+        catch (err) {
+            log("ERROR: No video found with this search string: " + searchString + '\nError: '+err.message);
+            return;
+        }
+    }
+
+    log("Generating song information");
+    const song = {
+        id: video.id,
+        title: video.title,
+        url: `https://www.youtube.com/watch?v=${video.id}`
+    };
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
+
+    try{
+        DB_add(song);
+    }catch(error)
+    {
+        console.log("ERROR unable to update database.");
+    }
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
+    console.log("Song information added to database.");
+}
+function DB_add(obj){
+    console.log("Updating database with new song information.");
+    var one = userRef.child(obj.id);
+    var count =1;
+    console.log("Scanning database for song ID: "+obj.id);
+
+    //Check if url exists already in database if so just increment count by 1 otherwise 0
+    one.once("value", function(snapshot) {
+        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+        console.log("Database found: "+snapshot.val() );
+        if(snapshot.val() ){
+            console.log("It exists in the database.");
+            console.log("Current count is: "+snapshot.val().count);
+
+            if( snapshot.val().count > 0 ){
+                console.log("Increasing count of count by 1:"+snapshot.val().count);
+                count = snapshot.val().count +1
+                console.log("count is now set to: "+count);
+            }
+        }
+        else{ //Null goes here
+            console.log("It does not exist in the database. Defaulting count to 1.");
+        }
+        var newData = {
+            id: obj.id,
+            title: obj.title,
+            url: obj.url,
+            count: count
+        }
+        //console.log("newData is: "+ newData);
+        var two = userRef.child(obj.id);
+        //Updates the Database
+        console.log("Updating database with new data: "+newData);
+        two.update(newData,(err)=>{
+            if(err){
+                console.log("Error with update: "+err)
+            }
+            else{
+                console.log("Song added to database.")
+            }
+        });
+    });
+
+
+    
+    
+
+}
+
+
+/*************************************************************************************************************************************/
+//When application starts do this:
+client.on('ready', () => {
+    log('Bot is ready...Awaiting Input!');
+    client.user.setActivity(". For help: `help"); 
+});
 
 client.login(token);
 
