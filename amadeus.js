@@ -682,7 +682,6 @@ async function gatherDataOnOtherBots(message){
         }
         catch (err) {
             log("ERROR: No video found with this search string: " + searchString + '\nError: '+err.message);
-            display(message, 'No video found.');
             return;
         }
     }
