@@ -474,9 +474,9 @@ async function play(guild, song) {
         currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
         log("Trying to set up reacts");
         try{
-            await currentSongPlayingMessage.react("arrow_foward");
-            await currentSongPlayingMessage.react("pause_button");
-            await currentSongPlayingMessage.react("octogonal_sign");
+            await currentSongPlayingMessage.react(":arrow_foward:");
+            await currentSongPlayingMessage.react(":pause_button:");
+            await currentSongPlayingMessage.react(":octagonal_sign:");
         }catch(error){
             log("Problem with reacts: "+error.message);
         }
