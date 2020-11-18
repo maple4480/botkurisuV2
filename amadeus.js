@@ -635,31 +635,31 @@ function log(msg){
     if(seconds<10){
         seconds = '0'+seconds;
     }
-    log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
+    console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function DB_add(obj){
     var one = userRef.child(obj.id);
     var count =1;
-    log("Scanning database for song ID: "+obj.id);
+    console.log("Scanning database for song ID: "+obj.id);
 
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
-        log("Database found: "+snapshot.val() );
+        console.log("Database found: "+snapshot.val() );
         if(snapshot.val() ){
-            log("It exists in the database.");
-            log("Current count is: "+snapshot.val().count);
+            console.log("It exists in the database.");
+            console.log("Current count is: "+snapshot.val().count);
 
             if( snapshot.val().count > 0 ){
-                log("Increasing count of count by 1:"+snapshot.val().count);
+                console.log("Increasing count of count by 1:"+snapshot.val().count);
                 count = snapshot.val().count +1
-                log("count is now set to: "+count);
+                console.log("count is now set to: "+count);
             }
 
             return snapshot.val().count;
         }
         else{ //Null goes here
-            log("It does not exist in the database. Defaulting count to 1.");
+            console.log("It does not exist in the database. Defaulting count to 1.");
         }
         var newData = {
             id: obj.id,
@@ -667,15 +667,15 @@ function DB_add(obj){
             url: obj.url,
             count: count
         }
-        log("Creating new data to add to DB: \n\tid: "+obj.id+"\n\ttitle: "+obj.title+"\n\turl: "+obj.url+"\n\tcount: "+count);
+        console.log("");
         var two = userRef.child(obj.id);
         //Updates the Database
         two.update(newData,(err)=>{
             if(err){
-                log("Error with update: "+err)
+                console.log("Error with update: "+err)
             }
             else{
-                log("Song added to database.")
+                console.log("Song added to database.")
             }
         });
     });
