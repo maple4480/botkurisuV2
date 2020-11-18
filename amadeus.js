@@ -655,8 +655,6 @@ function DB_add(obj){
                 count = snapshot.val().count +1
                 console.log("count is now set to: "+count);
             }
-
-            return snapshot.val().count;
         }
         else{ //Null goes here
             console.log("It does not exist in the database. Defaulting count to 1.");
@@ -667,7 +665,7 @@ function DB_add(obj){
             url: obj.url,
             count: count
         }
-        console.log("newData is: "+ newData);
+        //console.log("newData is: "+ newData);
         var two = userRef.child(obj.id);
         //Updates the Database
         two.update(newData,(err)=>{
