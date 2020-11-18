@@ -534,8 +534,13 @@ async function play(guild, song) {
         }
         else{
             log("Out of tries to play dispatcher.");
-            //playerStatus If not working just stop the player?
-            return;
+            //clean up resources since player is not working for that song.
+            //playerStatus = false;
+            //Try to play next song.
+            tryThisManyTimes =3;
+            serverQueue.songs.shift();
+            play(guild,song);
+
         }
     }
     log("Finished play method.");
