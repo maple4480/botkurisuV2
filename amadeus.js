@@ -35,7 +35,8 @@ var eventHandler = new events.EventEmitter();
 var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 //If dispatcher errors out will try this many number of times before giving up.
-var tryThisManyTimes =3;
+const numberOfTriesAllowed = 3;
+var tryThisManyTimes =numberOfTriesAllowed;
 
 //var currentSongMessage =""; //Contains a reference to the message that updates every time play runs.
 
@@ -465,7 +466,9 @@ async function play(guild, song) {
     }
 
     log(song.title + ' is now playing!');
-    textChannel.send('```'+song.title + ' is now playing!```');
+    if(numberOfTriesAllowed == tryThisManyTimes){
+        textChannel.send('```'+song.title + ' is now playing!```');
+    }
     
 
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
@@ -537,7 +540,7 @@ async function play(guild, song) {
             //clean up resources since player is not working for that song.
             //playerStatus = false;
             //Try to play next song.
-            tryThisManyTimes =3;
+            tryThisManyTimes =numberOfTriesAllowed;
             serverQueue.songs.shift();
             play(guild, serverQueue.songs[0]);
 
