@@ -637,7 +637,7 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-function DB_add(obj){
+async function DB_add(obj){
     //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
     var count =1;
