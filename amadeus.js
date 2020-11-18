@@ -161,6 +161,13 @@ async function execute(message, serverQueue) {
     };
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 
+    try{
+        DB_add(song);
+    }catch(error)
+    {
+        console.log("ERROR unable to update database: "+error.message);
+    }
+
     log("Checking if a queue exists for this guild id: "+message.guild.id);
     if (queue.get(message.guild.id) == null) {
         log("\tqueue does not exist for this guild id: "+message.guild.id);
@@ -638,6 +645,7 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function DB_add(obj){
+    console.log("Updating database with new song information.");
     var one = userRef.child(obj.id);
     var count =1;
     console.log("Scanning database for song ID: "+obj.id);
@@ -692,12 +700,12 @@ client.on('ready', () => {
     log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
 
-    const song = {
-        id: 180,
-        title: "test",
-        url: "testME.com"
-    };
-    DB_add(song);
+    // const song = {
+    //     id: 180,
+    //     title: "test",
+    //     url: "testME.com"
+    // };
+    // DB_add(song);
 });
 
 client.login(token);
