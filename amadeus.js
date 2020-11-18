@@ -518,7 +518,7 @@ async function play(guild, song) {
             dispatcher.resume();
         });
     }catch(error){
-        log("Error with dispatcher: "error.message);
+        log("Error with dispatcher: "+error.message);
         play(guild,song);
     }
     log("Finished play method.");
