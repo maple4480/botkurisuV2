@@ -637,12 +637,12 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-async function DB_add(obj){
+function DB_add(obj){
     //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
     var count =1;
 
-    var numberOfCount = await DB_Exist(obj);
+    var numberOfCount = DB_Exist(obj);
     console.log("DB_Exist function returned: "+numberOfCount);
     if( numberOfCount > 0 ){
         console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount);
@@ -669,11 +669,11 @@ async function DB_add(obj){
 
 }
 //if exists in DB return >0 count otherwise return 0
-function DB_Exist(obj){
+async function DB_Exist(obj){
     var one = userRef.child(obj.id);
     console.log("Scanning database for song ID: "+obj.id);
     //Check if url exists already in database if so just increment count by 1 otherwise 0
-    one.once("value", function(snapshot) {
+    await one.once("value", function(snapshot) {
         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
         console.log("Database found: "+snapshot.val() );
         if(snapshot.val() ){
