@@ -1,4 +1,4 @@
-export default class Database {
+module.exports = class Database {
     constructor(db_ref){
         this.db_ref = db_ref;
     }

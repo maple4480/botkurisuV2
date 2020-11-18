@@ -20,7 +20,9 @@ const token = process.env.BOT_TOKEN;
 const dbRef = process.env.DB_REFERENCE;
 
 var db=admin.database();
-import Database from './objects/Database.js';
+//import Database from './objects/Database.js';
+var Database = require('./objects/Database.js');
+
 var db_ref = new Database( db.ref(dbRef) );
 //var userRef=db.ref(dbRef);
 
