@@ -51,6 +51,10 @@ var textChannel; //Keep a reference to the text channel, the queueConstruct was 
 //What to do when receive Messages:
 client.on('message', (message) => {
     if (message.author.bot) return;
+    if (message.content.startsWith("-play")) {
+        this.gatherDataOnOtherBots(message);
+        return;
+    }
     if (!message.content.startsWith("`")) return;
 
     const serverQueue = queue.get(message.guild.id);
@@ -647,8 +651,57 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-function gatherDataOn(){
-    
+function gatherDataOnOtherBots(message){
+    log('Starting gatherDataOnOtherBots method.');
+
+    log('Cleaning argument.');
+    const args = message.content.split(' ');
+    if (args[1] === undefined) {
+        log('No argument received.');
+        return;
+    }
+    log('Args: '+args);
+    const url = args[1].replace(/<(.+)>/g, '$1');
+    const searchString = args.slice(1).join(' ');
+
+    log('\targs: '+args+' \n\tURL: '+url+' \n\tsearchString: '+ searchString+'\nCleaned song argument.');
+    //Currently only allows one youtube video to play.
+    log('Attemping to gather information on video.');
+    try {
+        var video = await youtube.getVideo(url);
+    }
+    catch (error) {
+        log("This may not be a URL link: "+searchString);
+        log("Error: "+error.message);
+
+        try {
+            log("Attemping to search with arguments: "+searchString);
+            var videos = await youtube.searchVideos(searchString, 1);
+            var video = await youtube.getVideoByID(videos[0].id);
+            log("Video found: "+video.id);
+        }
+        catch (err) {
+            log("ERROR: No video found with this search string: " + searchString + '\nError: '+err.message);
+            display(message, 'No video found.');
+            return;
+        }
+    }
+
+    log("Generating song information");
+    const song = {
+        id: video.id,
+        title: video.title,
+        url: `https://www.youtube.com/watch?v=${video.id}`
+    };
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
+
+    try{
+        DB_add(song);
+    }catch(error)
+    {
+        console.log("ERROR unable to update database.");
+    }
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 }
 function DB_add(obj){
     console.log("Updating database with new song information.");
