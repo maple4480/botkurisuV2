@@ -405,7 +405,7 @@ function skip(message, serverQueue) {
 
         log('Setting repeat to false.');
         repeat = false;
-        
+
         log("Now skipping current song.");
         serverQueue.connection.dispatcher.end();
         display(message, 'Skipping the current song!');
@@ -481,10 +481,14 @@ async function play(guild, song) {
     playerStatus = true;
 
     //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
+    //Add filter in ytdl(): Error with dispatcher: Status code: 429
     //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
     try{
         //const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
-        const dispatcher = serverQueue.connection.play(await ytdl(song.url), { type: 'opus' })
+        const dispatcher = serverQueue.connection.play(await ytdl(song.url, {
+            quality: 'highestaudio',
+            highWaterMark: 1 << 25
+        }), { type: 'opus' })
             .on('finish', () => {
                 log("Current song ended.");
                 currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
