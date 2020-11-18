@@ -34,6 +34,9 @@ var eventHandler = new events.EventEmitter();
 
 var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
+//If dispatcher errors out will try this many number of times before giving up.
+var tryThisManyTimes =3;
+
 //var currentSongMessage =""; //Contains a reference to the message that updates every time play runs.
 
 // var timeoutID; //NEW CODE
@@ -468,6 +471,8 @@ async function play(guild, song) {
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
 
+    //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
+    //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
     try{
         const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
             .on('finish', () => {
@@ -519,7 +524,18 @@ async function play(guild, song) {
         });
     }catch(error){
         log("Error with dispatcher: "+error.message);
-        play(guild,song);
+        if( tryThisManyTimes >0)
+        {
+            tryThisManyTimes=tryThisManyTimes-1;
+            log("Problem with dispatcher will try again. Number of tries remaining:"+tryThisManyTimes);
+            play(guild,song);
+            
+        }
+        else{
+            log("Out of tries to play dispatcher.");
+            //playerStatus If not working just stop the player?
+            return;
+        }
     }
     log("Finished play method.");
 }
