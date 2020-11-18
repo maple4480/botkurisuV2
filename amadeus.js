@@ -651,7 +651,7 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-function gatherDataOnOtherBots(message){
+async function gatherDataOnOtherBots(message){
     log('Starting gatherDataOnOtherBots method.');
 
     log('Cleaning argument.');
@@ -702,6 +702,7 @@ function gatherDataOnOtherBots(message){
         console.log("ERROR unable to update database.");
     }
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
+    console.log("Song information added to database.");
 }
 function DB_add(obj){
     console.log("Updating database with new song information.");
