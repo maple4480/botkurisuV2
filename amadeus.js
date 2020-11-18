@@ -474,7 +474,8 @@ async function play(guild, song) {
     //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
     //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
     try{
-        const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
+        //const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
+        const dispatcher = serverQueue.connection.play(await ytdl(song.url), { type: 'opus' })
             .on('finish', () => {
                 log("Current song ended.");
                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
