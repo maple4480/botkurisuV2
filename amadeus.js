@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const ytdl = require('ytdl-core-discord');
 const Youtube = require('simple-youtube-api');
 
-//Database - Started 11/17/2020
+//Database
 const admin = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
@@ -20,11 +20,7 @@ const token = process.env.BOT_TOKEN;
 const dbRef = process.env.DB_REFERENCE;
 
 var db=admin.database();
-//import Database from './objects/Database.js';
-var Database = require('./objects/Database.js');
-
-var db_ref = new Database( db.ref(dbRef) );
-//var userRef=db.ref(dbRef);
+var userRef=db.ref(dbRef);
 
 const youtube = new Youtube(GOOGLE_API);
 
@@ -172,7 +168,7 @@ async function execute(message, serverQueue) {
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 
     try{
-        db_ref.DB_add(song);
+        DB_add(song);
     }catch(error)
     {
         console.log("ERROR unable to update database.");
@@ -472,60 +468,55 @@ async function play(guild, song) {
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
 
-    try{
-        const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
-            .on('finish', () => {
-                log("Current song ended.");
-                log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
-                if (serverQueue.voiceChannel.members.array().length <= 1
-                    || serverQueue.voiceChannel.members.get(botID) === undefined) {
-                    log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
-                    //Maybe only need to call stop method?
-                    serverQueue.voiceChannel.leave();
-                    queue.delete(guild.id);
-                    log('Resources cleared.');
-                    return;
-                }
+    //Do I need to encapsulate this in a try block?
+    const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
+        .on('finish', () => {
+            log("Current song ended.");
+            log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
+            if (serverQueue.voiceChannel.members.array().length <= 1
+                || serverQueue.voiceChannel.members.get(botID) === undefined) {
+                log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
+                //Maybe only need to call stop method?
+                serverQueue.voiceChannel.leave();
+                queue.delete(guild.id);
+                log('Resources cleared.');
+                return;
+            }
 
-                log("Repeating is currently: "+repeat);
-                if (!repeat) {
-                    log('Repeat is off! Attempting to play next song.');
-                    serverQueue.songs.shift();
-                }
-                else{
-                    log('Repeat is on! Attempting to play same song.');
-                }
-                play(guild, serverQueue.songs[0]);
-            })
-            .on('error', error => {
-                log("Error in dispatcher: "+error.message);
-            });
-
-        log('Setting song volume to 50%');
-        dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    
-        log('Listening for stop events.');
-        eventHandler.on('stop', function () {
-            log("Destroying connection.");
-            dispatcher.end();
+            log("Repeating is currently: "+repeat);
+            if (!repeat) {
+                log('Repeat is off! Attempting to play next song.');
+                serverQueue.songs.shift();
+            }
+            else{
+                log('Repeat is on! Attempting to play same song.');
+            }
+            play(guild, serverQueue.songs[0]);
+        })
+        .on('error', error => {
+            log("Error in dispatcher: "+error.message);
         });
 
-        log('Listening for pause events.');
-        eventHandler.on('pause', function () {
-            log("Pausing player.");
-            dispatcher.pause();
-        });
+    log('Setting song volume to 50%');
+    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+  
+    log('Listening for stop events.');
+    eventHandler.on('stop', function () {
+        log("Destroying connection.");
+        dispatcher.end();
+    });
 
-        log('Listening for resume events.');
-        eventHandler.on('resume', function () {
-            log("Resuming player.");
-            dispatcher.resume();
-        }); 
-    }catch(error){
-        log("There was an issue with the player: "+error.message);
-        log("Trying again ");
-        play(guild, song);
-    }
+    log('Listening for pause events.');
+    eventHandler.on('pause', function () {
+        log("Pausing player.");
+        dispatcher.pause();
+    });
+
+    log('Listening for resume events.');
+    eventHandler.on('resume', function () {
+        log("Resuming player.");
+        dispatcher.resume();
+    });
     log("Finished play method.");
 }
 function currentPlaying(message, serverQueue) {
@@ -712,49 +703,54 @@ async function gatherDataOnOtherBots(message){
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
     console.log("Song information added to database.");
 }
-// function DB_add(obj){
-//     console.log("Updating database with new song information.");
-//     var one = userRef.child(obj.id);
-//     var count =1;
-//     console.log("Scanning database for song ID: "+obj.id);
+function DB_add(obj){
+    console.log("Updating database with new song information.");
+    var one = userRef.child(obj.id);
+    var count =1;
+    console.log("Scanning database for song ID: "+obj.id);
 
-//     //Check if url exists already in database if so just increment count by 1 otherwise 0
-//     one.once("value", function(snapshot) {
-//         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
-//         console.log("Database found: "+snapshot.val() );
-//         if(snapshot.val() ){
-//             console.log("It exists in the database.");
-//             console.log("Current count is: "+snapshot.val().count);
+    //Check if url exists already in database if so just increment count by 1 otherwise 0
+    one.once("value", function(snapshot) {
+        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+        console.log("Database found: "+snapshot.val() );
+        if(snapshot.val() ){
+            console.log("It exists in the database.");
+            console.log("Current count is: "+snapshot.val().count);
 
-//             if( snapshot.val().count > 0 ){
-//                 console.log("Increasing count of count by 1:"+snapshot.val().count);
-//                 count = snapshot.val().count +1
-//                 console.log("count is now set to: "+count);
-//             }
-//         }
-//         else{ //Null goes here
-//             console.log("It does not exist in the database. Defaulting count to 1.");
-//         }
-//         var newData = {
-//             id: obj.id,
-//             title: obj.title,
-//             url: obj.url,
-//             count: count
-//         }
-//         //console.log("newData is: "+ newData);
-//         var two = userRef.child(obj.id);
-//         //Updates the Database
-//         console.log("Updating database with new data: "+newData);
-//         two.update(newData,(err)=>{
-//             if(err){
-//                 console.log("Error with update: "+err)
-//             }
-//             else{
-//                 console.log("Song added to database.")
-//             }
-//         });
-//     });
-// }
+            if( snapshot.val().count > 0 ){
+                console.log("Increasing count of count by 1:"+snapshot.val().count);
+                count = snapshot.val().count +1
+                console.log("count is now set to: "+count);
+            }
+        }
+        else{ //Null goes here
+            console.log("It does not exist in the database. Defaulting count to 1.");
+        }
+        var newData = {
+            id: obj.id,
+            title: obj.title,
+            url: obj.url,
+            count: count
+        }
+        //console.log("newData is: "+ newData);
+        var two = userRef.child(obj.id);
+        //Updates the Database
+        console.log("Updating database with new data: "+newData);
+        two.update(newData,(err)=>{
+            if(err){
+                console.log("Error with update: "+err)
+            }
+            else{
+                console.log("Song added to database.")
+            }
+        });
+    });
+
+
+    
+    
+
+}
 
 
 /*************************************************************************************************************************************/
