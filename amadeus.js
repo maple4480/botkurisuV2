@@ -544,7 +544,7 @@ async function play(guild, song) {
         });
 
         log('Listening for pause events.');
-        eventHandler.on('pause', function () {
+        eventHandler.on('pause', async function () {
             log("Pausing player.");
             dispatcher.pause();
             currentSongPlayingMessage.edit('```'+song.title + ' is paused.```');
