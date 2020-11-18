@@ -496,6 +496,7 @@ async function play(guild, song) {
     try{
         //const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         const dispatcher = serverQueue.connection.play(await ytdl(song.url, {
+            filter: format => ['251'],
             quality: 'highestaudio',
             highWaterMark: 1 << 25
         }), { type: 'opus' })
