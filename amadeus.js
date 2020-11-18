@@ -640,9 +640,12 @@ function log(msg){
 function addDBrow(obj){
     //'obj.url' is child of the parent
     var one = userRef.child(obj.url);
+    
     //Check if url exists already in database if so just increment count by 1 otherwise 0
-    one.once("value").then(function(snapshot) {
+    one.once("value", function(snapshot) {
         var count = (snapshot.val() && snapshot.val().count) || 0;
+        console.log("Snapshot.val() is:  "+snapshot.val());
+        console.log("This is the current count: "+snapshot.val().count);
         obj.count = count+1;
     });
 
@@ -666,7 +669,7 @@ client.on('ready', () => {
     const song = {
         id: 124,
         title: "test",
-        url: "URL"
+        url: "google.com"
     };
     addDBrow(song);
 });
