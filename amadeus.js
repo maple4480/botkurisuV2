@@ -641,16 +641,24 @@ function addDBrow(obj){
     //'obj.url' is child of the parent
     var one = userRef.child(obj.id);
     
+    var count=0;
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
         var count = (snapshot.val() && snapshot.val().count) || 0;
+        console.log("This is the value of var count: "+ count);
         console.log("Snapshot.val() is:  "+snapshot.val());
         console.log("This is the current count: "+snapshot.val().count);
         obj.count = count+1;
     });
 
+    var newData = {
+        id: obj.id,
+        title: obj.title,
+        url: obj.url,
+        count: count
+    }
     //var one = userRef.child("violet");
-    one.update(obj,(err)=>{
+    one.update(newData,(err)=>{
         if(err){
             console.log("Song removed from database: "+err)
         }
@@ -667,9 +675,9 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 125,
+        id: 130,
         title: "test",
-        url: "google.com"
+        url: "yahoo.com"
     };
     addDBrow(song);
 });
