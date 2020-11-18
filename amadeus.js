@@ -563,7 +563,7 @@ async function play(guild, song) {
         });
 
         log('Listening for resume events.');
-        eventHandler.on('resume', function () {
+        eventHandler.on('resume', async function () {
             log("Resuming player.");
             dispatcher.resume();
             currentSongPlayingMessage.edit('```'+song.title + ' is now playing!```');
