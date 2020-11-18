@@ -668,6 +668,7 @@ function DB_add(obj){
         //console.log("newData is: "+ newData);
         var two = userRef.child(obj.id);
         //Updates the Database
+        console.log("Updating database with new data: "+newData);
         two.update(newData,(err)=>{
             if(err){
                 console.log("Error with update: "+err)
