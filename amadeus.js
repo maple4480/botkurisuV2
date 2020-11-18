@@ -475,11 +475,11 @@ async function play(guild, song) {
         log("Trying to set up reacts");
         try{
             log("Trying to set up reacts1");
-            await currentSongPlayingMessage.react(":arrow_forward:");
+            await currentSongPlayingMessage.react("▶️");
             log("Trying to set up reacts2");
-            await currentSongPlayingMessage.react(":pause_button:");
+            await currentSongPlayingMessage.react("⏸");
             log("Trying to set up reacts3");
-            await currentSongPlayingMessage.react(":octagonal_sign:");
+            await currentSongPlayingMessage.react("🛑");
         }catch(error){
             log("Problem with reacts: "+error.message);
         }
