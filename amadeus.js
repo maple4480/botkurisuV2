@@ -540,6 +540,7 @@ async function play(guild, song) {
         log('Listening for stop events.');
         eventHandler.on('stop', function () {
             log("Destroying connection.");
+            currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
             dispatcher.end();
         });
 
@@ -547,6 +548,7 @@ async function play(guild, song) {
         eventHandler.on('pause', async function () {
             log("Pausing player.");
             dispatcher.pause();
+            currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
             currentSongPlayingMessage.edit('```'+song.title + ' is paused.```');
             try{
                 log("Trying to set up reacts");
@@ -566,6 +568,7 @@ async function play(guild, song) {
         eventHandler.on('resume', async function () {
             log("Resuming player.");
             dispatcher.resume();
+            currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
             currentSongPlayingMessage.edit('```'+song.title + ' is now playing!```');
             try{
                 log("Trying to set up reacts");
