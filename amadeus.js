@@ -526,12 +526,14 @@ async function play(guild, song) {
         eventHandler.on('pause', function () {
             log("Pausing player.");
             dispatcher.pause();
+            currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is paused.```');
         });
 
         log('Listening for resume events.');
         eventHandler.on('resume', function () {
             log("Resuming player.");
             dispatcher.resume();
+            currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
         });
     }catch(error){
         log("Error with dispatcher: "+error.message);
@@ -545,13 +547,11 @@ async function play(guild, song) {
         else{
             log("Out of tries to play dispatcher.");
             currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing. Skipping to next song!```');
-            //clean up resources since player is not working for that song.
-            //playerStatus = false;
+
             //Try to play next song.
             tryThisManyTimes =numberOfTriesAllowed;
             serverQueue.songs.shift();
             play(guild, serverQueue.songs[0]);
-
         }
     }
     log("Finished play method.");
