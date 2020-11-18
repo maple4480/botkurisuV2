@@ -32,6 +32,10 @@ var repeat = false; //If true play current song, until set again.
 var events = require('events');
 var eventHandler = new events.EventEmitter();
 
+eventHandler.on('pause', function () {
+    log("This should not run!");
+});
+
 var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 //If dispatcher errors out will try this many number of times before giving up.
@@ -638,12 +642,12 @@ function pause(message) {
     log("Requesting player pause.");
     try {
         if(playerStatus){
-            log("Confirmed player is currently playing. Now emitting the pause event.");
+            log("Confirmed player has been turned on. Now emitting the pause event.");
             eventHandler.emit('pause'); 
             display(message, "The player has been paused.");
         }
         else{
-            log("Player is not playing right now. Refusing to emit pause event.");
+            log("Confirmed player is off. Refusing to emit pause event.");
             display(message, "There is nothing to pause as the player is not playing.");
         }
     }
@@ -657,14 +661,14 @@ function resume(message) {
     log("Requesting player to resume.");
     try {
         if(playerStatus){
-            log("Confirmed player is currently paused. Now emitting the resume event.");
+            log("Confirmed player has been turned on. Now emitting the resume event.");
             eventHandler.emit('resume'); 
             // log('Setting player status to false.');
             // playerStatus = false;
             display(message, "The player will now resume.");
         }
         else{
-            log("Player is not playing right now. Refusing to emit resume event.");
+            log("Confirmed player is off. Refusing to emit resume event.");
             display(message, "There is nothing to resume as the player is not playing.");
         }
     }
