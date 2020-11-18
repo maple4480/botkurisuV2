@@ -132,12 +132,15 @@ client.on('messageReactionAdd', (reaction, user) => {
     //         log("React: Trying to set up Repeat");
     //         await currentSongPlayingMessage.react("🔄");
     if (emoji.name == '⏸') {
+        console.log("user selected pause emoji");
         eventHandler.emit('pause');
     }
     else if (emoji.name == '▶️') {
-        eventHandler.emit('play');
+        console.log("user selected play emoji");
+        eventHandler.emit('resume');
     }
     else if (emoji.name == '🛑') {
+        console.log("user selected stop emoji");
         eventHandler.emit('stop');
     }
     //Add repeat later
