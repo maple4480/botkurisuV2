@@ -638,19 +638,10 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function addDBrow(obj){
+    var exist = DB_Exist(obj);
+    console.log("exist variable contains: "+exist);
     //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
-    
-    var count=0;
-    //Check if url exists already in database if so just increment count by 1 otherwise 0
-    one.once("value", function(snapshot) {
-        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain 
-
-        console.log("Do I exist? If null does not exist "+snapshot.val() );
-        console.log("This is the current count: "+snapshot.val().url);
-
-        obj.count = count+1;
-    });
 
     var newData = {
         id: obj.id,
@@ -658,7 +649,8 @@ function addDBrow(obj){
         url: obj.url,
         count: count
     }
-    //var one = userRef.child("violet");
+    
+    //Updates the Database
     one.update(newData,(err)=>{
         if(err){
             console.log("Song removed from database: "+err)
@@ -666,6 +658,16 @@ function addDBrow(obj){
         else{
             console.log("Song added to database: "+err)
         }
+    });
+
+}
+function DB_Exist(obj){
+    var one = userRef.child(obj.id);
+    //Check if url exists already in database if so just increment count by 1 otherwise 0
+    one.once("value", function(snapshot) {
+        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain 
+        console.log("Do I exist? If null does not exist "+snapshot.val() );
+        console.log("This is the current count: "+snapshot.val().url);
     });
 }
 
@@ -676,9 +678,9 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 160,
+        id: 170,
         title: "test",
-        url: "shouldnotsee.com"
+        url: "shouldnotsee2.com"
     };
     addDBrow(song);
 });
