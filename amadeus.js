@@ -483,7 +483,6 @@ async function play(guild, song) {
         const dispatcher = serverQueue.connection.play(await ytdl(song.url), { type: 'opus' })
             .on('finish', () => {
                 log("Current song ended.");
-                //Maybe edit currentSongPlayingMessage to change from now playing to finished playing?
                 currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
 
                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
@@ -542,7 +541,7 @@ async function play(guild, song) {
         }
         else{
             log("Out of tries to play dispatcher.");
-            currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing.```');
+            currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing. Skipping to next song!```');
             //clean up resources since player is not working for that song.
             //playerStatus = false;
             //Try to play next song.
@@ -657,12 +656,17 @@ function pause(message) {
 function resume(message) {
     log("Requesting player to resume.");
     try {
-        eventHandler.emit('resume');
-
-        // log('Setting player status to false.');
-        // playerStatus = false;
-
-        display(message, "The player will now resume.");
+        if(playerStatus){
+            log("Confirmed player is currently paused. Now emitting the resume event.");
+            eventHandler.emit('resume'); 
+            // log('Setting player status to false.');
+            // playerStatus = false;
+            display(message, "The player will now resume.");
+        }
+        else{
+            log("Player is not playing right now. Refusing to emit resume event.");
+            display(message, "There is nothing to resume as the player is not playing.");
+        }
     }
     catch (error) {
         log("ERROR: Trying to resume music.");
