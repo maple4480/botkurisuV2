@@ -642,9 +642,10 @@ function DB_add(obj){
     var one = userRef.child(obj.id);
     var count =1;
 
-    var numberOfCount = DB_Exist(obj);
+    var numberOfCount = parseInt(DB_Exist(obj));
     if( numberOfCount > 0 ){
-        count = numberOfCount;
+        console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount+" 1 ");
+        count = numberOfCount+1;
     }
 
     var newData = {
