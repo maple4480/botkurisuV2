@@ -678,6 +678,7 @@ function DB_Exist(obj){
         console.log("Database found: "+snapshot.val() );
         if(snapshot.val() ){
             console.log("It exists in the database.");
+            console.log("Current count is: "+snapshot.val().count);
             return snapshot.val().count;
         }
         else{ //Null goes here
