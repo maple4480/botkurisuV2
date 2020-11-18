@@ -169,6 +169,7 @@ async function execute(message, serverQueue) {
     {
         console.log("ERROR unable to update database.");
     }
+    log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 
     log("Checking if a queue exists for this guild id: "+message.guild.id);
     if (queue.get(message.guild.id) == null) {
@@ -647,7 +648,7 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function gatherDataOn(){
-    //WORK IN PROG.
+    
 }
 function DB_add(obj){
     console.log("Updating database with new song information.");
