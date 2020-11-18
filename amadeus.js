@@ -20,7 +20,9 @@ const token = process.env.BOT_TOKEN;
 const dbRef = process.env.DB_REFERENCE;
 
 var db=admin.database();
-var userRef=db.ref(dbRef);
+import Database from './objects/Database.js';
+var db_ref = new Database( db.ref(dbRef) );
+//var userRef=db.ref(dbRef);
 
 const youtube = new Youtube(GOOGLE_API);
 
@@ -168,7 +170,7 @@ async function execute(message, serverQueue) {
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
 
     try{
-        DB_add(song);
+        db_ref.DB_add(song);
     }catch(error)
     {
         console.log("ERROR unable to update database.");
@@ -708,54 +710,49 @@ async function gatherDataOnOtherBots(message){
     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
     console.log("Song information added to database.");
 }
-function DB_add(obj){
-    console.log("Updating database with new song information.");
-    var one = userRef.child(obj.id);
-    var count =1;
-    console.log("Scanning database for song ID: "+obj.id);
+// function DB_add(obj){
+//     console.log("Updating database with new song information.");
+//     var one = userRef.child(obj.id);
+//     var count =1;
+//     console.log("Scanning database for song ID: "+obj.id);
 
-    //Check if url exists already in database if so just increment count by 1 otherwise 0
-    one.once("value", function(snapshot) {
-        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
-        console.log("Database found: "+snapshot.val() );
-        if(snapshot.val() ){
-            console.log("It exists in the database.");
-            console.log("Current count is: "+snapshot.val().count);
+//     //Check if url exists already in database if so just increment count by 1 otherwise 0
+//     one.once("value", function(snapshot) {
+//         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+//         console.log("Database found: "+snapshot.val() );
+//         if(snapshot.val() ){
+//             console.log("It exists in the database.");
+//             console.log("Current count is: "+snapshot.val().count);
 
-            if( snapshot.val().count > 0 ){
-                console.log("Increasing count of count by 1:"+snapshot.val().count);
-                count = snapshot.val().count +1
-                console.log("count is now set to: "+count);
-            }
-        }
-        else{ //Null goes here
-            console.log("It does not exist in the database. Defaulting count to 1.");
-        }
-        var newData = {
-            id: obj.id,
-            title: obj.title,
-            url: obj.url,
-            count: count
-        }
-        //console.log("newData is: "+ newData);
-        var two = userRef.child(obj.id);
-        //Updates the Database
-        console.log("Updating database with new data: "+newData);
-        two.update(newData,(err)=>{
-            if(err){
-                console.log("Error with update: "+err)
-            }
-            else{
-                console.log("Song added to database.")
-            }
-        });
-    });
-
-
-    
-    
-
-}
+//             if( snapshot.val().count > 0 ){
+//                 console.log("Increasing count of count by 1:"+snapshot.val().count);
+//                 count = snapshot.val().count +1
+//                 console.log("count is now set to: "+count);
+//             }
+//         }
+//         else{ //Null goes here
+//             console.log("It does not exist in the database. Defaulting count to 1.");
+//         }
+//         var newData = {
+//             id: obj.id,
+//             title: obj.title,
+//             url: obj.url,
+//             count: count
+//         }
+//         //console.log("newData is: "+ newData);
+//         var two = userRef.child(obj.id);
+//         //Updates the Database
+//         console.log("Updating database with new data: "+newData);
+//         two.update(newData,(err)=>{
+//             if(err){
+//                 console.log("Error with update: "+err)
+//             }
+//             else{
+//                 console.log("Song added to database.")
+//             }
+//         });
+//     });
+// }
 
 
 /*************************************************************************************************************************************/
