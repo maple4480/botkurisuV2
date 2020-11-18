@@ -38,7 +38,7 @@ var textChannel; //Keep a reference to the text channel, the queueConstruct was 
 const numberOfTriesAllowed = 3;
 var tryThisManyTimes =numberOfTriesAllowed;
 
-//var currentSongMessage =""; //Contains a reference to the message that updates every time play runs.
+var currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
 
 // var timeoutID; //NEW CODE
 
@@ -466,8 +466,12 @@ async function play(guild, song) {
     }
 
     log(song.title + ' is now playing!');
+
     if(numberOfTriesAllowed == tryThisManyTimes){
-        textChannel.send('```'+song.title + ' is now playing!```');
+        currentSongPlayingMessage = textChannel.send('```'+song.title + ' is now playing!```');
+    }
+    else{
+        currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing.```');
     }
     
 
