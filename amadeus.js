@@ -646,6 +646,9 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
+function gatherDataOn(){
+    //WORK IN PROG.
+}
 function DB_add(obj){
     console.log("Updating database with new song information.");
     var one = userRef.child(obj.id);
