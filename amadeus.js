@@ -667,7 +667,7 @@ function DB_add(obj){
             url: obj.url,
             count: count
         }
-        console.log("");
+        console.log("newData is: "+ newData);
         var two = userRef.child(obj.id);
         //Updates the Database
         two.update(newData,(err)=>{
