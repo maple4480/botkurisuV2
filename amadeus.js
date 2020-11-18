@@ -118,6 +118,29 @@ client.on('message', (message) => {
         display(message, 'You need to enter a valid command!')
     }
 });
+client.on('messageReactionAdd', (reaction, user) => {
+    let message = reaction.message, emoji = reaction.emoji;
+ 
+    if (!message.author.bot) return; //Only care for reactions to messages that was sent by the bot
+    console.log("The user who sent the reaction is: "+user);
+
+    // log("React: Trying to set up Pause");
+    //         await currentSongPlayingMessage.react("⏸");
+    //         log("React: Trying to set up Stop");
+    //         await currentSongPlayingMessage.react("🛑");
+    //         log("React: Trying to set up Repeat");
+    //         await currentSongPlayingMessage.react("🔄");
+    if (emoji.name == '⏸') {
+        eventHandler.emit('pause');
+    }
+    else if (emoji.name == '▶️') {
+        eventHandler.emit('play');
+    }
+    else if (emoji.name == '🛑') {
+        eventHandler.emit('stop');
+    }
+    //Add repeat later
+});
 async function execute(message, serverQueue) {
     log('Starting execute method.');
     log('Checking my permissions.');
