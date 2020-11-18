@@ -52,7 +52,7 @@ var textChannel; //Keep a reference to the text channel, the queueConstruct was 
 client.on('message', (message) => {
     if (message.author.bot) return;
     if (message.content.startsWith("-play")) {
-        this.gatherDataOnOtherBots(message);
+        gatherDataOnOtherBots(message);
         return;
     }
     if (!message.content.startsWith("`")) return;
