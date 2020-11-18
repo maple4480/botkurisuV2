@@ -638,15 +638,13 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function addDBrow(obj){
-    //'obj.url' is child of the parent
+    //'obj.id' is child of the parent. If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain
     var one = userRef.child(obj.id);
     
     var count=0;
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
         var count = (snapshot.val() && snapshot.val().count) || 0;
-        console.log("This is the value of var count: "+ count);
-        console.log("Snapshot.val() is:  "+snapshot.val());
         console.log("This is the current count: "+snapshot.val().url);
         obj.count = count+1;
     });
@@ -675,7 +673,7 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 130,
+        id: 140,
         title: "test",
         url: "yahoo.com"
     };
