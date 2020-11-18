@@ -503,6 +503,7 @@ async function play(guild, song) {
                 }
                 else{
                     log('Repeat is on! Attempting to play same song.');
+                    currentSongPlayingMessage.edit('```'+song.title + ' is repeating. Playing again!```');
                 }
                 play(guild, serverQueue.songs[0]);
             })
@@ -570,16 +571,29 @@ function currentPlaying(message, serverQueue) {
 }
 function repeatSong(message, serverQueue) {
     log("Starting repeatSong method.");
-    if (repeat) {
-        log("End Repeat of Current Song: "+serverQueue.songs[0].title);
-        repeat = false;
-        display(message, 'Requested to stop repeating: ' + serverQueue.songs[0].title);
+    try{
+        if(playerStatus){
+            if (repeat) {
+                log("End Repeat of Current Song: "+serverQueue.songs[0].title);
+                repeat = false;
+                display(message, 'Requested to stop repeating: ' + serverQueue.songs[0].title);
+            }
+            else {
+                log("Repeating Current Song: "+serverQueue.songs[0].title);
+                repeat = true;
+                display(message, 'Repeating...' + serverQueue.songs[0].title + ' until `repeat command is used again.');
+            }
+        }
+        else{
+            log("Confirmed player is off. Refusing to emit repeat event.");
+            display(message, "There is nothing to repeat as the player is not playing.");
+        }
+    }catch(error){
+        log("Error with repeatSong method: "+error.message);
+        display(message, "Problem with repeat functionality.");
     }
-    else {
-        log("Repeating Current Song: "+serverQueue.songs[0].title);
-        repeat = true;
-        display(message, 'Repeating...' + serverQueue.songs[0].title + ' until `repeat command is used again.');
-    }
+
+
     log("Finishing repeatSong method.");
 }
 
