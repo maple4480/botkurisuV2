@@ -638,55 +638,53 @@ function log(msg){
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
 function DB_add(obj){
-    //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
     var count =1;
-
-    var numberOfCount = parseInt(DB_Exist(obj));
-    console.log("DB_Exist function returned: "+numberOfCount);
-    if( numberOfCount > 0 ){
-        console.log("Since number of counts is greater than 0 will increment this by 1: "+numberOfCount);
-        count = numberOfCount+1;
-        console.log("count is now set to: "+count);
-    }
-
-    var newData = {
-        id: obj.id,
-        title: obj.title,
-        url: obj.url,
-        count: count
-    }
-    
-    //Updates the Database
-    one.update(newData,(err)=>{
-        if(err){
-            console.log("Error with update: "+err)
-        }
-        else{
-            console.log("Song added to database.")
-        }
-    });
-
-}
-//if exists in DB return >0 count otherwise return 0
-async function DB_Exist(obj){
-    var one = userRef.child(obj.id);
     console.log("Scanning database for song ID: "+obj.id);
+
     //Check if url exists already in database if so just increment count by 1 otherwise 0
-    await one.once("value", function(snapshot) {
+    one.once("value", function(snapshot) {
         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
         console.log("Database found: "+snapshot.val() );
         if(snapshot.val() ){
             console.log("It exists in the database.");
             console.log("Current count is: "+snapshot.val().count);
+
+            if( snapshot.val().count > 0 ){
+                console.log("Increasing count of count by 1:"+snapshot.val().count);
+                count = snapshot.val().count +1
+                console.log("count is now set to: "+count);
+            }
+
             return snapshot.val().count;
         }
         else{ //Null goes here
-            console.log("It does not exist in the database.");
-            return 0;
+            console.log("It does not exist in the database. Defaulting count to 1.");
         }
+        var newData = {
+            id: obj.id,
+            title: obj.title,
+            url: obj.url,
+            count: count
+        }
+
+        //Updates the Database
+        one.update(newData,(err)=>{
+            if(err){
+                console.log("Error with update: "+err)
+            }
+            else{
+                console.log("Song added to database.")
+            }
+        });
     });
+
+
+    
+    
+
 }
+
 
 /*************************************************************************************************************************************/
 //When application starts do this:
