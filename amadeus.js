@@ -483,6 +483,9 @@ async function play(guild, song) {
         const dispatcher = serverQueue.connection.play(await ytdl(song.url), { type: 'opus' })
             .on('finish', () => {
                 log("Current song ended.");
+                //Maybe edit currentSongPlayingMessage to change from now playing to finished playing?
+                currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
+
                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                 if (serverQueue.voiceChannel.members.array().length <= 1
                     || serverQueue.voiceChannel.members.get(botID) === undefined) {
