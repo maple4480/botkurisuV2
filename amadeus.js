@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const ytdl = require('ytdl-core-discord');
 const Youtube = require('simple-youtube-api');
 
-//Database
+//Database - Started 11/17/2020
 const admin = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
@@ -468,55 +468,60 @@ async function play(guild, song) {
     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
     playerStatus = true;
 
-    //Do I need to encapsulate this in a try block?
-    const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
-        .on('finish', () => {
-            log("Current song ended.");
-            log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
-            if (serverQueue.voiceChannel.members.array().length <= 1
-                || serverQueue.voiceChannel.members.get(botID) === undefined) {
-                log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
-                //Maybe only need to call stop method?
-                serverQueue.voiceChannel.leave();
-                queue.delete(guild.id);
-                log('Resources cleared.');
-                return;
-            }
+    try{
+        const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
+            .on('finish', () => {
+                log("Current song ended.");
+                log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
+                if (serverQueue.voiceChannel.members.array().length <= 1
+                    || serverQueue.voiceChannel.members.get(botID) === undefined) {
+                    log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
+                    //Maybe only need to call stop method?
+                    serverQueue.voiceChannel.leave();
+                    queue.delete(guild.id);
+                    log('Resources cleared.');
+                    return;
+                }
 
-            log("Repeating is currently: "+repeat);
-            if (!repeat) {
-                log('Repeat is off! Attempting to play next song.');
-                serverQueue.songs.shift();
-            }
-            else{
-                log('Repeat is on! Attempting to play same song.');
-            }
-            play(guild, serverQueue.songs[0]);
-        })
-        .on('error', error => {
-            log("Error in dispatcher: "+error.message);
+                log("Repeating is currently: "+repeat);
+                if (!repeat) {
+                    log('Repeat is off! Attempting to play next song.');
+                    serverQueue.songs.shift();
+                }
+                else{
+                    log('Repeat is on! Attempting to play same song.');
+                }
+                play(guild, serverQueue.songs[0]);
+            })
+            .on('error', error => {
+                log("Error in dispatcher: "+error.message);
+            });
+
+        log('Setting song volume to 50%');
+        dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    
+        log('Listening for stop events.');
+        eventHandler.on('stop', function () {
+            log("Destroying connection.");
+            dispatcher.end();
         });
 
-    log('Setting song volume to 50%');
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-  
-    log('Listening for stop events.');
-    eventHandler.on('stop', function () {
-        log("Destroying connection.");
-        dispatcher.end();
-    });
+        log('Listening for pause events.');
+        eventHandler.on('pause', function () {
+            log("Pausing player.");
+            dispatcher.pause();
+        });
 
-    log('Listening for pause events.');
-    eventHandler.on('pause', function () {
-        log("Pausing player.");
-        dispatcher.pause();
-    });
-
-    log('Listening for resume events.');
-    eventHandler.on('resume', function () {
-        log("Resuming player.");
-        dispatcher.resume();
-    });
+        log('Listening for resume events.');
+        eventHandler.on('resume', function () {
+            log("Resuming player.");
+            dispatcher.resume();
+        }); 
+    }catch(error){
+        log("There was an issue with the player: "+error.message);
+        log("Trying again ");
+        play(guild, song);
+    }
     log("Finished play method.");
 }
 function currentPlaying(message, serverQueue) {
