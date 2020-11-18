@@ -637,11 +637,15 @@ function log(msg){
     }
     console.log(hours + ':' + minutes  + ':'+seconds+' |'+msg);
 }
-function addDBrow(obj){
-    var exist = DB_Exist(obj);
-
+function DB_add(obj){
     //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
+    var count =1;
+
+    var numberOfCount = DB_Exist(obj);
+    if( numberOfCount > 0 ){
+        count = numberOfCount;
+    }
 
     var newData = {
         id: obj.id,
@@ -661,6 +665,7 @@ function addDBrow(obj){
     });
 
 }
+//if exists in DB return >0 count otherwise return 0
 function DB_Exist(obj){
     var one = userRef.child(obj.id);
     console.log("Scanning database for: "+obj.id);
@@ -670,11 +675,11 @@ function DB_Exist(obj){
         console.log("Database found: "+snapshot.val() );
         if(snapshot.val() ){
             console.log("It exists in the database.");
-            return true;
+            return snapshot.val().count;
         }
         else{ //Null goes here
             console.log("It does not exist in the database.");
-            return false;
+            return 0;
         }
     });
 }
@@ -690,7 +695,7 @@ client.on('ready', () => {
         title: "test",
         url: "testME.com"
     };
-    addDBrow(song);
+    DB_add(song);
 });
 
 client.login(token);
