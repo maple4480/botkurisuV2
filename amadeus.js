@@ -468,7 +468,7 @@ async function play(guild, song) {
     log(song.title + ' is now playing!');
 
     if(numberOfTriesAllowed == tryThisManyTimes){
-        currentSongPlayingMessage = textChannel.send('```'+song.title + ' is now playing!```');
+        currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
     }
     else{
         currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing.```');
