@@ -1,9 +1,15 @@
+//Based on environment.
+const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
+const GOOGLE_API = process.env.GOOGLE_API;
+const token = process.env.BOT_TOKEN;
+const dbRef = process.env.DB_REFERENCE;
+
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-
 const ytdl = require('ytdl-core-discord');
 const Youtube = require('simple-youtube-api');
+const youtube = new Youtube(GOOGLE_API);
 
 //Database
 const admin = require('firebase-admin');
@@ -11,18 +17,10 @@ admin.initializeApp({
     credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
     databaseURL: "https://kurisudata.firebaseio.com"
 });
-
-
-//Based on environment.
-const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
-const GOOGLE_API = process.env.GOOGLE_API;
-const token = process.env.BOT_TOKEN;
-const dbRef = process.env.DB_REFERENCE;
-
 var db=admin.database();
 var userRef=db.ref(dbRef);
 
-const youtube = new Youtube(GOOGLE_API);
+
 
 const queue = new Map();
 var playerStatus = false; //The player is false when not playing a song. Should be false when: No more songs playing, not in voice channel, paused, stopped
@@ -474,6 +472,15 @@ async function play(guild, song) {
     if(numberOfTriesAllowed == tryThisManyTimes){
         log("Awaiting currently playing song message to send in discord.");
         currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
+        log("Trying to set up reacts");
+        try{
+            await currentSongPlayingMessage.react("arrow_foward");
+            await currentSongPlayingMessage.react("pause_button");
+            await currentSongPlayingMessage.react("octogonal_sign");
+        }catch(error){
+            log("Problem with reacts: "+error.message);
+        }
+        
     }
     
 
@@ -492,6 +499,7 @@ async function play(guild, song) {
             .on('finish', () => {
                 log("Current song ended.");
                 currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
+                //currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                 if (serverQueue.voiceChannel.members.array().length <= 1
@@ -549,7 +557,7 @@ async function play(guild, song) {
         if( tryThisManyTimes >0)
         {
             tryThisManyTimes=tryThisManyTimes-1;
-            log("Problem with dispatcher will try again. Number of tries remaining:"+tryThisManyTimes);
+            log("Problem with dispatcher will try again. Number of tries remaining: "+tryThisManyTimes);
             play(guild,song);
             
         }
@@ -809,11 +817,6 @@ function DB_add(obj){
             }
         });
     });
-
-
-    
-    
-
 }
 
 
