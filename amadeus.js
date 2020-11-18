@@ -468,10 +468,8 @@ async function play(guild, song) {
     log(song.title + ' is now playing!');
 
     if(numberOfTriesAllowed == tryThisManyTimes){
+        log("Awaiting currently playing song message to send in discord.");
         currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
-    }
-    else{
-        currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing.```');
     }
     
 
@@ -541,6 +539,7 @@ async function play(guild, song) {
         }
         else{
             log("Out of tries to play dispatcher.");
+            currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing.```');
             //clean up resources since player is not working for that song.
             //playerStatus = false;
             //Try to play next song.
