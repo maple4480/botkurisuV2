@@ -402,6 +402,10 @@ function skip(message, serverQueue) {
     try {
         if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
         if (!serverQueue) return display(message, 'There is no song that I could skip!');
+
+        log('Setting repeat to false.');
+        repeat = false;
+        
         log("Now skipping current song.");
         serverQueue.connection.dispatcher.end();
         display(message, 'Skipping the current song!');
