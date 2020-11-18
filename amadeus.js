@@ -10,15 +10,17 @@ const admin = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert( JSON.parse(process.env.SERVICE_ACCOUNT) ),
     databaseURL: "https://kurisudata.firebaseio.com"
-    //authDomain:
 });
-var db=admin.database();
-var userRef=db.ref("list")
+
 
 //Based on environment.
 const botID = process.env.BOT_ID; //Bot ID used to check if been kicked. 
 const GOOGLE_API = process.env.GOOGLE_API;
 const token = process.env.BOT_TOKEN;
+const dbRef = process.env.DB_REFERENCE;
+
+var db=admin.database();
+var userRef=db.ref(dbRef);
 
 const youtube = new Youtube(GOOGLE_API);
 
@@ -165,7 +167,7 @@ async function execute(message, serverQueue) {
         DB_add(song);
     }catch(error)
     {
-        console.log("ERROR unable to update database: "+error.message);
+        console.log("ERROR unable to update database.");
     }
 
     log("Checking if a queue exists for this guild id: "+message.guild.id);
@@ -699,13 +701,6 @@ function DB_add(obj){
 client.on('ready', () => {
     log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
-
-    // const song = {
-    //     id: 180,
-    //     title: "test",
-    //     url: "testME.com"
-    // };
-    // DB_add(song);
 });
 
 client.login(token);
