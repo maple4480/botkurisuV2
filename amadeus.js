@@ -121,7 +121,8 @@ client.on('message', (message) => {
 client.on('messageReactionAdd', (reaction, user) => {
     let message = reaction.message, emoji = reaction.emoji;
  
-    if (!user.bot) return; //Only care for reactions to messages that was sent by the bot
+    if (user.bot) return; //Ignore reacts sent by the bot
+    if (!message.author.bot) return; //Only process messages that are from the bot
     console.log("The user who sent the reaction is: "+user);
 
     // log("React: Trying to set up Pause");
