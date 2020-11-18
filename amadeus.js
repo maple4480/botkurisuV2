@@ -639,7 +639,7 @@ function log(msg){
 }
 function addDBrow(obj){
     var exist = DB_Exist(obj);
-    console.log("exist variable contains: "+exist);
+
     //'obj.id' is child of the parent. 
     var one = userRef.child(obj.id);
 
@@ -663,11 +663,19 @@ function addDBrow(obj){
 }
 function DB_Exist(obj){
     var one = userRef.child(obj.id);
+    console.log("Scanning database for: "+obj.id);
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
-        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain 
-        console.log("Do I exist? If null does not exist "+snapshot.val() );
-        console.log("This is the current count: "+snapshot.val().url);
+        //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+        console.log("Database found: "+snapshot.val() );
+        if(snapshot.val() ){
+            console.log("It exists in the database.");
+            return true;
+        }
+        else{ //Null goes here
+            console.log("It does not exist in the database.");
+            return false;
+        }
     });
 }
 
@@ -678,9 +686,9 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 170,
+        id: 180,
         title: "test",
-        url: "shouldnotsee2.com"
+        url: "testME.com"
     };
     addDBrow(song);
 });
