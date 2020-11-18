@@ -516,6 +516,8 @@ async function play(guild, song) {
 
         log('Setting song volume to 50%');
         dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+
+        eventHandler = new events.EventEmitter(); //Reset events so all previous .on() will not work.
     
         log('Listening for stop events.');
         eventHandler.on('stop', function () {
