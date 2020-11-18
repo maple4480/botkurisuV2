@@ -644,9 +644,9 @@ function addDBrow(obj){
     var count=0;
     //Check if url exists already in database if so just increment count by 1 otherwise 0
     one.once("value", function(snapshot) {
-        var count = (snapshot.val() && snapshot.val().count) || 0;
-
         //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain 
+
+        console.log("Do I exist? If null does not exist "+snapshot.val() );
         console.log("This is the current count: "+snapshot.val().url);
 
         obj.count = count+1;
@@ -676,9 +676,9 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     const song = {
-        id: 150,
+        id: 160,
         title: "test",
-        url: "facebook.com"
+        url: "shouldnotsee.com"
     };
     addDBrow(song);
 });
