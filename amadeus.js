@@ -141,6 +141,7 @@ client.on('messageReactionAdd', (reaction, user) => {
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
     }
+    reaction.remove(user); //remove users reaction
 
 });
 async function execute(message, serverQueue) {
