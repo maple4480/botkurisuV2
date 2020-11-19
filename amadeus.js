@@ -137,19 +137,13 @@ client.on('messageReactionAdd', async (reaction, user) => {
         console.log("user selected stop emoji");
         eventHandler.emit('stop');
     }
-    else if (emoji.name == '🔄') {
+    else if (emoji.name == '🔄') {//Repeat is a special case
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
+        reaction.remove(user);
+        await currentSongPlayingMessage.react("🔄");
     }
-    console.log("Looking for all reactions by this user on this message");
-    const userReactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(user));
-    try {
-        for (const reaction of userReactions.values()) {
-            await reaction.users.remove(user);
-        }
-    } catch (error) {
-        console.error('Failed to remove reactions.');
-    }
+
 
 });
 async function execute(message, serverQueue) {
