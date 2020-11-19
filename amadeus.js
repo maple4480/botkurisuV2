@@ -33,7 +33,7 @@ var eventHandler = new events.EventEmitter();
 var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 //If dispatcher errors out will try this many number of times before giving up.
-const numberOfTriesAllowed = 3;
+const numberOfTriesAllowed = 10;
 var tryThisManyTimes =numberOfTriesAllowed;
 
 var currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
