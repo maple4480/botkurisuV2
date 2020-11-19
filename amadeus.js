@@ -118,7 +118,7 @@ client.on('message', (message) => {
         display(message, 'You need to enter a valid command!')
     }
 });
-client.on('messageReactionAdd', (reaction, user) => {
+client.on('messageReactionAdd', async (reaction, user) => {
     let message = reaction.message, emoji = reaction.emoji;
  
     if (user.bot) return; //Ignore reacts sent by the bot
@@ -137,7 +137,7 @@ client.on('messageReactionAdd', (reaction, user) => {
         console.log("user selected stop emoji");
         eventHandler.emit('stop');
     }
-    else if (emoji.name == '🔄') {    //Add repeat later
+    else if (emoji.name == '🔄') {
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
     }
