@@ -123,6 +123,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
  
     if (user.bot) return; //Ignore reacts sent by the bot
     if (!message.author.bot) return; //Only process messages that are from the bot
+    if (!playerStatus) return; //Should not do anything if the player isn't playing
+
     console.log("The user who sent the reaction is: "+user);
 
     if (emoji.name == '⏸') {
@@ -141,11 +143,11 @@ client.on('messageReactionAdd', async (reaction, user) => {
         console.log("user selected stop emoji");
         skip(message, queue.get(message.guild.id) );
     }
-    else if (emoji.name == '🔄') {//Repeat is a special case
+    else if (emoji.name == '🔄') {
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
         reaction.remove(user);
-        await currentSongPlayingMessage.react("🔄");
+        await currentSongPlayingMessage.react("🔄"); //Repeat is a special case. Need to regenerate after removing.
     }
 
 
