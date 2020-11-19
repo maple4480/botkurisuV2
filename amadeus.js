@@ -137,6 +137,10 @@ client.on('messageReactionAdd', async (reaction, user) => {
         console.log("user selected stop emoji");
         eventHandler.emit('stop');
     }
+    else if (emoji.name == '⏩') {
+        console.log("user selected stop emoji");
+        skip(message, queue.get(message.guild.id) );
+    }
     else if (emoji.name == '🔄') {//Repeat is a special case
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
@@ -506,6 +510,8 @@ async function play(guild, song) {
             await currentSongPlayingMessage.react("⏸");
             log("React: Trying to set up Stop");
             await currentSongPlayingMessage.react("🛑");
+            log("React: Trying to set up Skip");
+            await currentSongPlayingMessage.react("⏩");
             log("React: Trying to set up Repeat");
             await currentSongPlayingMessage.react("🔄");
         }catch(error){
@@ -522,7 +528,6 @@ async function play(guild, song) {
     //Add filter in ytdl(): Error with dispatcher: Status code: 429
     //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
     try{
-        //const dispatcher = serverQueue.connection.play(await ytdl(song.url, { filter: format => ['251'],highWaterMark: 1 << 25 }), { type: 'opus' })
         const dispatcher = serverQueue.connection.play(await ytdl(song.url, {
             filter: format => ['251'],
             quality: 'highestaudio',
@@ -584,6 +589,8 @@ async function play(guild, song) {
                 await currentSongPlayingMessage.react("▶️");
                 log("React: Trying to set up Stop");
                 await currentSongPlayingMessage.react("🛑");
+                log("React: Trying to set up Skip");
+                await currentSongPlayingMessage.react("⏩");
                 log("React: Trying to set up Repeat");
                 await currentSongPlayingMessage.react("🔄");
             }catch(error){
@@ -604,6 +611,8 @@ async function play(guild, song) {
                 await currentSongPlayingMessage.react("⏸");
                 log("React: Trying to set up Stop");
                 await currentSongPlayingMessage.react("🛑");
+                log("React: Trying to set up Skip");
+                await currentSongPlayingMessage.react("⏩");
                 log("React: Trying to set up Repeat");
                 await currentSongPlayingMessage.react("🔄");
             }catch(error){
