@@ -125,12 +125,6 @@ client.on('messageReactionAdd', (reaction, user) => {
     if (!message.author.bot) return; //Only process messages that are from the bot
     console.log("The user who sent the reaction is: "+user);
 
-    // log("React: Trying to set up Pause");
-    //         await currentSongPlayingMessage.react("⏸");
-    //         log("React: Trying to set up Stop");
-    //         await currentSongPlayingMessage.react("🛑");
-    //         log("React: Trying to set up Repeat");
-    //         await currentSongPlayingMessage.react("🔄");
     if (emoji.name == '⏸') {
         console.log("user selected pause emoji");
         eventHandler.emit('pause');
@@ -143,7 +137,11 @@ client.on('messageReactionAdd', (reaction, user) => {
         console.log("user selected stop emoji");
         eventHandler.emit('stop');
     }
-    //Add repeat later
+    else if (emoji.name == '🔄') {    //Add repeat later
+        console.log("user selected repeat emoji");
+        repeatSong(message, queue.get(message.guild.id) )
+    }
+
 });
 async function execute(message, serverQueue) {
     log('Starting execute method.');
