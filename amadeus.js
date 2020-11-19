@@ -141,7 +141,14 @@ client.on('messageReactionAdd', (reaction, user) => {
         console.log("user selected repeat emoji");
         repeatSong(message, queue.get(message.guild.id) )
     }
-    reaction.remove(user); //remove users reaction
+    const userReactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(userId));
+    try {
+        for (const reaction of userReactions.values()) {
+            await reaction.users.remove(user);
+        }
+    } catch (error) {
+        console.error('Failed to remove reactions.');
+    }
 
 });
 async function execute(message, serverQueue) {
