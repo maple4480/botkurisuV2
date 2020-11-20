@@ -295,7 +295,6 @@ class MusicBot {
         //     }
         // });
         console.log('Finished execute method.');
-
     }
 
     async play(guild, song) {
@@ -388,10 +387,8 @@ class MusicBot {
             console.log('Listening for stop events.');
             this.eventHandler.on('stop', function () {
                 console.log("Destroying connection.");
-                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 dispatcher.end();
             });
-
             console.log('Listening for pause events.');
             this.eventHandler.on('pause', function () {
                 console.log("Entering real pause.");
@@ -399,26 +396,10 @@ class MusicBot {
                 
 
             });
-
             console.log('Listening for resume events.');
-            this.eventHandler.on('resume', async function () {
+            this.eventHandler.on('resume', function () {
                 console.log("Resuming player.");
                 dispatcher.resume();
-                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
-                try {
-                    console.log("Trying to set up reacts");
-                    console.log("React: Trying to set up Pause");
-                    await this.currentSongPlayingMessage.react("⏸");
-                    console.log("React: Trying to set up Stop");
-                    await this.currentSongPlayingMessage.react("🛑");
-                    console.log("React: Trying to set up Skip");
-                    await this.currentSongPlayingMessage.react("⏩");
-                    console.log("React: Trying to set up Repeat");
-                    await this.currentSongPlayingMessage.react("🔄");
-                } catch (error) {
-                    console.log("Problem with reacts: " + error.message);
-                }
             });
         } catch (error) {
             console.log("Error with dispatcher: " + error.message);
@@ -478,7 +459,23 @@ class MusicBot {
             if(this.playerStatus){
                 console.log("Confirmed player has been turned on. Now emitting the resume event.");
                 this.eventHandler.emit('resume'); 
-                // Reactions here
+                
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                //this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
+                try {
+                    console.log("Trying to set up reacts");
+                    console.log("React: Trying to set up Pause");
+                    await this.currentSongPlayingMessage.react("⏸");
+                    console.log("React: Trying to set up Stop");
+                    await this.currentSongPlayingMessage.react("🛑");
+                    console.log("React: Trying to set up Skip");
+                    await this.currentSongPlayingMessage.react("⏩");
+                    console.log("React: Trying to set up Repeat");
+                    await this.currentSongPlayingMessage.react("🔄");
+                } catch (error) {
+                    console.log("Problem with reacts: " + error.message);
+                }
+
                 this.currentSongPlayingMessage.edit("The player will now resume.");
             }
             else{
@@ -500,6 +497,9 @@ class MusicBot {
             if(!serverQueue) return console.log('No need to clean any resources.');;
             console.log('Beginning to clean up unused resources.');
     
+            console.log('Clearing reactions.');
+            this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+
             console.log('Setting player status to false.');
             this.playerStatus = false;
     
