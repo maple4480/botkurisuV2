@@ -396,21 +396,7 @@ class MusicBot {
             this.eventHandler.on('pause', async function () {
                 console.log("Entering real pause.");
                 dispatcher.pause();
-                this.currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
-                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                try {
-                    console.log("Trying to set up reacts");
-                    console.log("React: Trying to set up Play");
-                    await this.currentSongPlayingMessage.react("▶️");
-                    console.log("React: Trying to set up Stop");
-                    await this.currentSongPlayingMessage.react("🛑");
-                    console.log("React: Trying to set up Skip");
-                    await this.currentSongPlayingMessage.react("⏩");
-                    console.log("React: Trying to set up Repeat");
-                    await this.currentSongPlayingMessage.react("🔄");
-                } catch (error) {
-                    console.log("Problem with reacts: " + error.message);
-                }
+                
 
             });
 
@@ -461,6 +447,20 @@ class MusicBot {
                 console.log("Confirmed player has been turned on. Now emitting the pause event.");
                 this.eventHandler.emit('pause'); 
                 this.currentSongPlayingMessage.edit('```The player has been paused.```');
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                try {
+                    console.log("Trying to set up reacts");
+                    console.log("React: Trying to set up Play");
+                    await this.currentSongPlayingMessage.react("▶️");
+                    console.log("React: Trying to set up Stop");
+                    await this.currentSongPlayingMessage.react("🛑");
+                    console.log("React: Trying to set up Skip");
+                    await this.currentSongPlayingMessage.react("⏩");
+                    console.log("React: Trying to set up Repeat");
+                    await this.currentSongPlayingMessage.react("🔄");
+                } catch (error) {
+                    console.log("Problem with reacts: " + error.message);
+                }
             }
             else{
                 console.log("Confirmed player is off. Refusing to emit pause event.");
