@@ -35,8 +35,8 @@ class MusicBot {
 
     }
     async execute(message, serverQueue) {
-        log('Starting execute method.');
-        log('Checking my permissions.');
+        console.log('Starting execute method.');
+        console.log('Checking my permissions.');
         const voiceChannel = message.member.voice.channel;
         if (!voiceChannel)
             return display(message, 'You need to be in a voice channel to play music!');
@@ -44,58 +44,58 @@ class MusicBot {
         if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
             return display(message, 'I need the permissions to join and speak in your voice channel!');
         }
-        log('Correct permissions received!');
+        console.log('Correct permissions received!');
 
-        log('Cleaning song argument');
+        console.log('Cleaning song argument');
         const args = message.content.split(' ');
         if (args[1] === undefined) {
-            log('No argument received.');
+            console.log('No argument received.');
             return;
         }
         const url = args[1].replace(/<(.+)>/g, '$1');
         const searchString = args.slice(1).join(' ');
 
-        log('\targs: ' + args + ' \n\tURL: ' + url + ' \n\tsearchString: ' + searchString + '\nCleaned song argument.');
+        console.log('\targs: ' + args + ' \n\tURL: ' + url + ' \n\tsearchString: ' + searchString + '\nCleaned song argument.');
         //Currently only allows one youtube video to play.
-        log('Attemping to gather information on video.');
+        console.log('Attemping to gather information on video.');
         try {
             var video = await youtube.getVideo(url);
         }
         catch (error) {
-            log("This may not be a URL link: " + searchString);
-            log("Error: " + error.message);
+            console.log("This may not be a URL link: " + searchString);
+            console.log("Error: " + error.message);
 
             try {
-                log("Attemping to search with arguments: " + searchString);
+                console.log("Attemping to search with arguments: " + searchString);
                 var videos = await youtube.searchVideos(searchString, 1);
                 var video = await youtube.getVideoByID(videos[0].id);
-                log("Video found: " + video.id);
+                console.log("Video found: " + video.id);
             }
             catch (err) {
-                log("ERROR: No video found with this search string: " + searchString + '\nError: ' + err.message);
+                console.log("ERROR: No video found with this search string: " + searchString + '\nError: ' + err.message);
                 display(message, 'No video found.');
                 return;
             }
         }
 
-        log("Generating song information");
+        console.log("Generating song information");
         const song = {
             id: video.id,
             title: video.title,
             url: `https://www.youtube.com/watch?v=${video.id}`
         };
-        log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
+        console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
         try {
             DB_add(song);
         } catch (error) {
-            console.log("ERROR unable to update database.");
+            console.console.log("ERROR unable to update database.");
         }
-        log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
+        console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
-        log("Checking if a queue exists for this guild id: " + message.guild.id);
+        console.log("Checking if a queue exists for this guild id: " + message.guild.id);
         if (queue.get(message.guild.id) == null) {
-            log("\tqueue does not exist for this guild id: " + message.guild.id);
+            console.log("\tqueue does not exist for this guild id: " + message.guild.id);
             const queueContruct = {
                 textChannel: message.channel,
                 voiceChannel: voiceChannel,
@@ -105,75 +105,75 @@ class MusicBot {
                 playing: true,
             };
             queue.set(message.guild.id, queueContruct);
-            log("\t\tQueue generated and set for this guild id: " + message.guild.id);
+            console.log("\t\tQueue generated and set for this guild id: " + message.guild.id);
 
             textChannel = message.channel;
-            log("Reference to the current text channel saved!");
+            console.log("Reference to the current text channel saved!");
 
             queueContruct.songs.push(song);
-            log("\t\tSong added to queue: " + song.title);
+            console.log("\t\tSong added to queue: " + song.title);
             display(message, song.title + " added to the queue!");
 
             try {
                 //May be needed if song ends?
                 // voiceChannel.leave();
-                log('\t\tAttemping to join channel.');
+                console.log('\t\tAttemping to join channel.');
                 var connection = await voiceChannel.join();
                 queueContruct.connection = connection;
-                log('\t\tChannel joined.');
+                console.log('\t\tChannel joined.');
 
-                log('\t\tAttemping to start player.');
+                console.log('\t\tAttemping to start player.');
                 //currentSongMessage = await message.channel.send("Currently Playing: "+song.title);
                 play(message.guild, queueContruct.songs[0]);
             } catch (error) {
-                log('ERROR: Unable to establish connection/play first song. ' + error.message);
+                console.log('ERROR: Unable to establish connection/play first song. ' + error.message);
                 display(message, "Error detected.");
 
-                log('Performing clean up.');
+                console.log('Performing clean up.');
                 queue.delete(message.guild.id);
                 voiceChannel.leave();
             }
         }
         else {
-            log("\tqueue exists for this guild id: " + message.guild.id);
+            console.log("\tqueue exists for this guild id: " + message.guild.id);
             try {
-                log("\t\tAdding song to queue.");
+                console.log("\t\tAdding song to queue.");
                 const queueContruct = queue.get(message.guild.id);
                 if (queueContruct) {
                     queueContruct.songs.push(song);
 
                     if (!playerStatus) {
-                        log('\t\tAttemping to start player.');
+                        console.log('\t\tAttemping to start player.');
                         play(message.guild, queueContruct.songs[0]);
                     }
                 }
             }
             catch (error) {
-                log("ERROR: Unable to add song to queue. " + error.message);
+                console.log("ERROR: Unable to add song to queue. " + error.message);
                 display(message, "Unable to add the video to queue.");
             }
 
             display(message, `${song.title} has been added to the queue!`);
-            return log('Finished execute method.');
+            return console.log('Finished execute method.');
         }
 
         // ytpl(url, async function (err, playlist) {
         //     if (err) {
-        //         log('Single video found. Now attemping to gather information.');
+        //         console.log('Single video found. Now attemping to gather information.');
         //         try {
         //             var video = await youtube.getVideo(url);
-        //             log("HERE");
+        //             console.log("HERE");
         //         }
         //         catch (error) {
-        //             log("May not be a URL link: "+error.message);
+        //             console.log("May not be a URL link: "+error.message);
         //             try {
         //                 var videos = await youtube.searchVideos(searchString, 1);
-        //                 log("HERE2");
+        //                 console.log("HERE2");
         //                 var video = await youtube.getVideoByID(videos[0].id);
-        //                 log("HERE3");
+        //                 console.log("HERE3");
         //             }
         //             catch (err) {
-        //                 log("ERROR: No video found. Will now stop searching for a video from: " + url);
+        //                 console.log("ERROR: No video found. Will now stop searching for a video from: " + url);
         //                 display(message, 'No video found.');
         //                 return;
         //             }
@@ -183,10 +183,10 @@ class MusicBot {
         //             title: video.title,
         //             url: `https://www.youtube.com/watch?v=${video.id}`
         //         };
-        //         log(song.title + "...has been added.");
+        //         console.log(song.title + "...has been added.");
         //         //display(message, song.title + "...has been added.");
         //         if (queue.get(message.guild.id) == null) {
-        //             log("Generating serverQueue..");
+        //             console.log("Generating serverQueue..");
         //             const queueContruct = {
         //                 textChannel: message.channel,
         //                 voiceChannel: voiceChannel,
@@ -200,13 +200,13 @@ class MusicBot {
         //             display(message, song.title + "...has been added.");
         //             try {
         //                 voiceChannel.leave();
-        //                 log('Trying to join channel.');
+        //                 console.log('Trying to join channel.');
         //                 var connection = await voiceChannel.join();
-        //                 log('Channel joined.');
+        //                 console.log('Channel joined.');
         //                 queueContruct.connection = connection;
         //                 play(message.guild, queueContruct.songs[0]);
         //             } catch (err) {
-        //                 log('ERROR: Unable to establish connection and play first song. '+err);
+        //                 console.log('ERROR: Unable to establish connection and play first song. '+err);
         //                 queue.delete(message.guild.id);
         //                 return display(message, err);
         //             }
@@ -216,15 +216,15 @@ class MusicBot {
         //                 if (!currentPlaying) {
         //                     //WHY LEAVE?
         //                     //voiceChannel.leave();
-        //                     log('Trying to join channel.');
+        //                     console.log('Trying to join channel.');
         //                     var connection = await voiceChannel.join();
-        //                     log('Channel joined.');
+        //                     console.log('Channel joined.');
         //                     serverQueue.connection = connection;
         //                     play(message.guild, serverQueue.songs[0]);
         //                 }
         //             }
         //             catch (err) {
-        //                 log("ERROR: Unable to add song to queue. " + err);
+        //                 console.log("ERROR: Unable to add song to queue. " + err);
         //                 display(message, "Unable to add the video to queue.");
         //                 return;
         //             }
@@ -233,11 +233,11 @@ class MusicBot {
         //     }
         //     else {
         //         //Start playlist from current song, don't care bout before songs
-        //         log("Playlist detected: " + url);
+        //         console.log("Playlist detected: " + url);
         //         //!serverQueue  The conditio nwas this
         //         //BUG: When add playlist, `stop, add playlist the !serverQueue is never hit
         //         if ( queue.get(message.guild.id) == null) {
-        //             log('Bot is not playing.. will add new playlist songs to queue.');
+        //             console.log('Bot is not playing.. will add new playlist songs to queue.');
         //             const queueContruct = {
         //                 textChannel: message.channel,
         //                 voiceChannel: voiceChannel,
@@ -249,7 +249,7 @@ class MusicBot {
         //             queue.set(message.guild.id, queueContruct);
         //             playlist['items'].forEach(function (item, index) {
         //                 try {
-        //                     //log(item);
+        //                     //console.log(item);
         //                     if (item['duration']) {
         //                         const song = {
         //                             id: item['id'],
@@ -259,7 +259,7 @@ class MusicBot {
         //                         queueContruct.songs.push(song);
         //                     }
         //                 } catch (err) {
-        //                     log(err);
+        //                     console.log(err);
         //                 }
         //             });
         //             display(message, `**${playlist['title']}** playlist has been added to the queue!`);
@@ -268,20 +268,20 @@ class MusicBot {
         //                 //NEW CODE
         //                 //WHY LEAVE?
         //                 //voiceChannel.leave();
-        //                 log('Trying to join channel.');
+        //                 console.log('Trying to join channel.');
         //                 var connection = await voiceChannel.join();
-        //                 log('Channel joined.');
+        //                 console.log('Channel joined.');
         //                 //END NEW CODE
         //                 queueContruct.connection = connection;
         //                 play(message.guild, queueContruct.songs[0]);
         //             } catch (err) {
-        //                 log("ERROR: Playlist/Joining, playing first playlist song.");
+        //                 console.log("ERROR: Playlist/Joining, playing first playlist song.");
         //                 display(message, 'I am unable to join, or start the music...');
         //                 queue.delete(message.guild.id);
         //                 return display(message, err);
         //             }
         //         } else {
-        //             log('Bot is playing.. will add new playlist songs to queue.');
+        //             console.log('Bot is playing.. will add new playlist songs to queue.');
         //             playlist['items'].forEach(function (item, index) {
         //                 if (item['duration']) {
         //                     const song = {
@@ -296,49 +296,49 @@ class MusicBot {
         //         }
         //     }
         // });
-        log('Finished execute method.');
+        console.log('Finished execute method.');
 
     }
 
     async play(guild, song) {
-        log("Starting play method.");
+        console.log("Starting play method.");
         const serverQueue = queue.get(guild.id);
 
         if (!song) {
-            log('No more songs left to play. Changing player status to false.');
+            console.log('No more songs left to play. Changing player status to false.');
             playerStatus = false;
             // timeoutID = setTimeout(function () {
-            //     log('Waited long enough, now exiting...');
+            //     console.log('Waited long enough, now exiting...');
             //     serverQueue.voiceChannel.leave();
             //     queue.delete(guild.id);
             // }, 50000);
-            // log("Initiated time out ");
+            // console.log("Initiated time out ");
             return;
         }
 
-        log(song.title + ' is now playing!');
+        console.log(song.title + ' is now playing!');
 
         if (numberOfTriesAllowed == tryThisManyTimes) {
-            log("Awaiting currently playing song message to send in discord.");
+            console.log("Awaiting currently playing song message to send in discord.");
             currentSongPlayingMessage = await textChannel.send('```' + song.title + ' is now playing!```');
-            log("Trying to set up reacts");
+            console.log("Trying to set up reacts");
             try {
-                log("React: Trying to set up Pause");
+                console.log("React: Trying to set up Pause");
                 await currentSongPlayingMessage.react("⏸");
-                log("React: Trying to set up Stop");
+                console.log("React: Trying to set up Stop");
                 await currentSongPlayingMessage.react("🛑");
-                log("React: Trying to set up Skip");
+                console.log("React: Trying to set up Skip");
                 await currentSongPlayingMessage.react("⏩");
-                log("React: Trying to set up Repeat");
+                console.log("React: Trying to set up Repeat");
                 await currentSongPlayingMessage.react("🔄");
             } catch (error) {
-                log("Problem with reacts: " + error.message);
+                console.log("Problem with reacts: " + error.message);
             }
 
         }
 
 
-        log("Changing status of playerStatus from: " + playerStatus + "\n\tto True.");
+        console.log("Changing status of playerStatus from: " + playerStatus + "\n\tto True.");
         playerStatus = true;
 
         //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
@@ -351,101 +351,101 @@ class MusicBot {
                 highWaterMark: 1 << 25
             }), { type: 'opus' })
                 .on('finish', () => {
-                    log("Current song ended.");
+                    console.log("Current song ended.");
                     currentSongPlayingMessage.edit('```' + song.title + ' is finished.```');
                     currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
-                    log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
+                    console.log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                     if (serverQueue.voiceChannel.members.array().length <= 1
                         || serverQueue.voiceChannel.members.get(botID) === undefined) {
-                        log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
+                        console.log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
                         //Maybe only need to call stop method?
                         serverQueue.voiceChannel.leave();
                         queue.delete(guild.id);
-                        log('Resources cleared.');
+                        console.log('Resources cleared.');
                         return;
                     }
 
-                    log("Repeating is currently: " + repeat);
+                    console.log("Repeating is currently: " + repeat);
                     if (!repeat) {
-                        log('Repeat is off! Attempting to play next song.');
+                        console.log('Repeat is off! Attempting to play next song.');
                         serverQueue.songs.shift();
                     }
                     else {
-                        log('Repeat is on! Attempting to play same song.');
+                        console.log('Repeat is on! Attempting to play same song.');
                         currentSongPlayingMessage.edit('```' + song.title + ' is repeating. Playing again!```');
                     }
                     play(guild, serverQueue.songs[0]);
                 })
                 .on('error', error => {
-                    log("Error in dispatcher: " + error.message);
+                    console.log("Error in dispatcher: " + error.message);
                 });
 
-            log('Setting song volume to 50%');
+            console.log('Setting song volume to 50%');
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-            log('Resetting eventHandler to listen to new events.');
+            console.log('Resetting eventHandler to listen to new events.');
             eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
 
-            log('Listening for stop events.');
+            console.log('Listening for stop events.');
             eventHandler.on('stop', function () {
-                log("Destroying connection.");
+                console.log("Destroying connection.");
                 currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 dispatcher.end();
             });
 
-            log('Listening for pause events.');
+            console.log('Listening for pause events.');
             eventHandler.on('pause', async function () {
-                log("Pausing player.");
+                console.log("Pausing player.");
                 dispatcher.pause();
                 currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
                 try {
-                    log("Trying to set up reacts");
-                    log("React: Trying to set up Play");
+                    console.log("Trying to set up reacts");
+                    console.log("React: Trying to set up Play");
                     await currentSongPlayingMessage.react("▶️");
-                    log("React: Trying to set up Stop");
+                    console.log("React: Trying to set up Stop");
                     await currentSongPlayingMessage.react("🛑");
-                    log("React: Trying to set up Skip");
+                    console.log("React: Trying to set up Skip");
                     await currentSongPlayingMessage.react("⏩");
-                    log("React: Trying to set up Repeat");
+                    console.log("React: Trying to set up Repeat");
                     await currentSongPlayingMessage.react("🔄");
                 } catch (error) {
-                    log("Problem with reacts: " + error.message);
+                    console.log("Problem with reacts: " + error.message);
                 }
 
             });
 
-            log('Listening for resume events.');
+            console.log('Listening for resume events.');
             eventHandler.on('resume', async function () {
-                log("Resuming player.");
+                console.log("Resuming player.");
                 dispatcher.resume();
                 currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
-                    log("Trying to set up reacts");
-                    log("React: Trying to set up Pause");
+                    console.log("Trying to set up reacts");
+                    console.log("React: Trying to set up Pause");
                     await currentSongPlayingMessage.react("⏸");
-                    log("React: Trying to set up Stop");
+                    console.log("React: Trying to set up Stop");
                     await currentSongPlayingMessage.react("🛑");
-                    log("React: Trying to set up Skip");
+                    console.log("React: Trying to set up Skip");
                     await currentSongPlayingMessage.react("⏩");
-                    log("React: Trying to set up Repeat");
+                    console.log("React: Trying to set up Repeat");
                     await currentSongPlayingMessage.react("🔄");
                 } catch (error) {
-                    log("Problem with reacts: " + error.message);
+                    console.log("Problem with reacts: " + error.message);
                 }
             });
         } catch (error) {
-            log("Error with dispatcher: " + error.message);
+            console.log("Error with dispatcher: " + error.message);
             if (tryThisManyTimes > 0) {
                 tryThisManyTimes = tryThisManyTimes - 1;
-                log("Problem with dispatcher will try again. Number of tries remaining: " + tryThisManyTimes);
+                console.log("Problem with dispatcher will try again. Number of tries remaining: " + tryThisManyTimes);
                 play(guild, song);
 
             }
             else {
-                log("Out of tries to play dispatcher.");
+                console.log("Out of tries to play dispatcher.");
                 currentSongPlayingMessage.edit('```' + song.title + ' is having issues playing. Skipping to next song!```');
 
                 //Try to play next song.
@@ -454,7 +454,7 @@ class MusicBot {
                 play(guild, serverQueue.songs[0]);
             }
         }
-        log("Finished play method.");
+        console.log("Finished play method.");
     }
 
 }
