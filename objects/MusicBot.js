@@ -59,7 +59,7 @@ class MusicBot {
         //Currently only allows one youtube video to play.
         console.log('Attemping to gather information on video.');
         try {
-            var video = await youtube.getVideo(url);
+            var video = await this.youtube.getVideo(url);
         }
         catch (error) {
             console.log("This may not be a URL link: " + searchString);
@@ -67,8 +67,8 @@ class MusicBot {
 
             try {
                 console.log("Attemping to search with arguments: " + searchString);
-                var videos = await youtube.searchVideos(searchString, 1);
-                var video = await youtube.getVideoByID(videos[0].id);
+                var videos = await this.searchVideos(searchString, 1);
+                var video = await this.youtube.getVideoByID(videos[0].id);
                 console.log("Video found: " + video.id);
             }
             catch (err) {
