@@ -317,7 +317,7 @@ class MusicBot {
         console.log(song.title + ' is now playing!');
 
         if (this.numberOfTriesAllowed == this.tryThisManyTimes) {
-            console.log("Awaiting currently playing song message to send in discord.");
+            console.log("Sending currently playing song to discord ONCE.");
             this.currentSongPlayingMessage = await this.textChannel.send('```' + song.title + ' is now playing!```');
             console.log("Trying to set up reacts");
             try {
@@ -343,7 +343,7 @@ class MusicBot {
         //Add filter in ytdl(): Error with dispatcher: Status code: 429
         //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
         try {
-            this.dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
+            const dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
                 filter: format => ['251'],
                 quality: 'highestaudio',
                 highWaterMark: 1 << 25
@@ -380,7 +380,7 @@ class MusicBot {
                 });
 
             console.log('Setting song volume to 50%');
-            this.dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
             console.log('Resetting eventHandler to listen to new events.');
             this.eventHandler = new this.events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
@@ -395,9 +395,9 @@ class MusicBot {
             console.log('Listening for pause events.');
             this.eventHandler.on('pause', async function () {
                 console.log("Entering real pause.");
-                this.dispatcher.pause();
-                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                dispatcher.pause();
                 this.currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 try {
                     console.log("Trying to set up reacts");
                     console.log("React: Trying to set up Play");
@@ -417,7 +417,7 @@ class MusicBot {
             console.log('Listening for resume events.');
             this.eventHandler.on('resume', async function () {
                 console.log("Resuming player.");
-                this.dispatcher.resume();
+                dispatcher.resume();
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
