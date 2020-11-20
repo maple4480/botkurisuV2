@@ -66,6 +66,7 @@ client.on('message', (message) => {
 
     if (message.content.startsWith("`play")) {
         //execute(message, serverQueue);
+        console.log("Let musicBot deal with play");
         musicBot.execute(message, serverQueue);
         return;
     } else if (message.content.startsWith("`skip")) {
