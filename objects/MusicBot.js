@@ -461,7 +461,6 @@ class MusicBot {
                 this.eventHandler.emit('resume'); 
                 
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                //this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
                     console.log("Trying to set up reacts");
                     console.log("React: Trying to set up Pause");
