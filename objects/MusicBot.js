@@ -456,6 +456,24 @@ class MusicBot {
         }
         console.log("Finished play method.");
     }
+    pause(message) {
+        console.log("Requesting player pause.");
+        try {
+            if(this.playerStatus){
+                console.log("Confirmed player has been turned on. Now emitting the pause event.");
+                this.eventHandler.emit('pause'); 
+                message.channel.send("The player has been paused.");
+            }
+            else{
+                console.log("Confirmed player is off. Refusing to emit pause event.");
+                message.channel.send(message, "There is nothing to pause as the player is not playing.");
+            }
+        }
+        catch (error) {
+            console.log("ERROR: Trying to pause music. "+error.message);
+        }
+        return;
+    }
 
 }
 
