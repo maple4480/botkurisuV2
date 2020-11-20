@@ -73,7 +73,8 @@ client.on('message', (message) => {
         skip(message, serverQueue);
         return;
     } else if (message.content.startsWith("`stop")) {
-        stop(message, serverQueue);
+        console.log("Let musicBot deal with stop");
+        musicBot.stop(message, serverQueue);
         return;
     } else if (message.content.startsWith("`song")) {
         currentPlaying(message, serverQueue);
