@@ -296,8 +296,7 @@ class MusicBot {
         // });
         console.log('Finished execute method.');
     }
-
-
+    
     async play(guild, song) {
         console.log("Starting play method.");
         const serverQueue = this.queue.get(guild.id);
