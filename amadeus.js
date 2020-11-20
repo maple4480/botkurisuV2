@@ -74,7 +74,7 @@ client.on('message', (message) => {
         return;
     } else if (message.content.startsWith("`stop")) {
         console.log("Let musicBot deal with stop");
-        musicBot.stop(message, serverQueue);
+        musicBot.stop(message);
         return;
     } else if (message.content.startsWith("`song")) {
         currentPlaying(message, serverQueue);
@@ -147,10 +147,10 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
     else if (emoji.name == '🛑') {
         console.log("user selected stop emoji");
-        eventHandler.emit('stop');
+        musicBot.stop(message);
     }
     else if (emoji.name == '⏩') {
-        console.log("user selected stop emoji");
+        console.log("user selected skip emoji");
         skip(message, queue.get(message.guild.id) );
     }
     else if (emoji.name == '🔄') {

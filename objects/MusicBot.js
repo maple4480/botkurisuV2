@@ -476,7 +476,7 @@ class MusicBot {
                     console.log("Problem with reacts: " + error.message);
                 }
 
-                this.currentSongPlayingMessage.edit("The player will now resume.");
+                this.currentSongPlayingMessage.edit("```The player will now resume.```");
             }
             else{
                 console.log("Confirmed player is off. Refusing to emit resume event.");
@@ -487,6 +487,7 @@ class MusicBot {
         }
         return;
     }
+    //Consider moving common code to its own function and creating a stop and leave method.
     stop(message) {
         console.log('Entering stop function.');
 
@@ -527,8 +528,6 @@ class MusicBot {
         }
         console.log('Finished Stop function.');
     }
-    
-
 }
 
 //export MusicBot so other modules can use
