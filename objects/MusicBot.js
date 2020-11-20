@@ -86,11 +86,12 @@ class MusicBot {
         };
         console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
-        try {
-            DB_add(song);
-        } catch (error) {
-            console.console.log("ERROR unable to update database.");
-        }
+        //Add song to db later
+        // try {
+        //     DB_add(song);
+        // } catch (error) {
+        //     console.log("ERROR unable to update database.");
+        // }
         console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
         console.log("Checking if a queue exists for this guild id: " + message.guild.id);
