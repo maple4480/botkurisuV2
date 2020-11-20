@@ -12,26 +12,26 @@ class MusicBot {
             credential: admin.credential.cert(JSON.parse(SERVICE_ACCOUNT)),
             databaseURL: "https://kurisudata.firebaseio.com"
         });
-        var db = admin.database();
-        var userRef = db.ref(dbRef);
+        this.db = admin.database();
+        this.userRef = this.db.ref(dbRef);
 
-        const queue = new Map();
-        var playerStatus = false; //The player is false when not playing a song. Should be false when: No more songs playing, not in voice channel, paused, stopped
-        var repeat = false; //If true play current song, until set again.
+        this.queue = new Map();
+        this.playerStatus = false; //The player is false when not playing a song. Should be false when: No more songs playing, not in voice channel, paused, stopped
+        this.repeat = false; //If true play current song, until set again.
 
 
         //Used for stop,pause, and resume functionality to reach dispatcher
         var events = require('events');
-        var eventHandler = new events.EventEmitter();
+        this.eventHandler = new events.EventEmitter();
 
-        var textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
+        this.textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
 
         //If dispatcher errors out will try this many number of times before giving up.
-        const numberOfTriesAllowed = 10;
-        var tryThisManyTimes = numberOfTriesAllowed;
+        this.numberOfTriesAllowed = 10;
+        this.tryThisManyTimes = this.numberOfTriesAllowed;
 
-        var currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
+        this.currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
 
     }
     async execute(message, serverQueue) {
@@ -95,7 +95,7 @@ class MusicBot {
         console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
         console.log("Checking if a queue exists for this guild id: " + message.guild.id);
-        if (queue.get(message.guild.id) == null) {
+        if (this.queue.get(message.guild.id) == null) {
             console.log("\tqueue does not exist for this guild id: " + message.guild.id);
             const queueContruct = {
                 textChannel: message.channel,
@@ -105,10 +105,10 @@ class MusicBot {
                 volume: 5,
                 playing: true,
             };
-            queue.set(message.guild.id, queueContruct);
+            this.queue.set(message.guild.id, queueContruct);
             console.log("\t\tQueue generated and set for this guild id: " + message.guild.id);
 
-            textChannel = message.channel;
+            this.textChannel = message.channel;
             console.log("Reference to the current text channel saved!");
 
             queueContruct.songs.push(song);
@@ -131,7 +131,7 @@ class MusicBot {
                 message.channel.send( "Error detected.");
 
                 console.log('Performing clean up.');
-                queue.delete(message.guild.id);
+                this.queue.delete(message.guild.id);
                 voiceChannel.leave();
             }
         }
@@ -139,11 +139,11 @@ class MusicBot {
             console.log("\tqueue exists for this guild id: " + message.guild.id);
             try {
                 console.log("\t\tAdding song to queue.");
-                const queueContruct = queue.get(message.guild.id);
+                const queueContruct = this.queue.get(message.guild.id);
                 if (queueContruct) {
                     queueContruct.songs.push(song);
 
-                    if (!playerStatus) {
+                    if (!this.playerStatus) {
                         console.log('\t\tAttemping to start player.');
                         play(message.guild, queueContruct.songs[0]);
                     }
@@ -303,11 +303,11 @@ class MusicBot {
 
     async play(guild, song) {
         console.log("Starting play method.");
-        const serverQueue = queue.get(guild.id);
+        const serverQueue = this.queue.get(guild.id);
 
         if (!song) {
             console.log('No more songs left to play. Changing player status to false.');
-            playerStatus = false;
+            this.playerStatus = false;
             // timeoutID = setTimeout(function () {
             //     console.log('Waited long enough, now exiting...');
             //     serverQueue.voiceChannel.leave();
@@ -319,19 +319,19 @@ class MusicBot {
 
         console.log(song.title + ' is now playing!');
 
-        if (numberOfTriesAllowed == tryThisManyTimes) {
+        if (this.numberOfTriesAllowed == this.tryThisManyTimes) {
             console.log("Awaiting currently playing song message to send in discord.");
-            currentSongPlayingMessage = await textChannel.send('```' + song.title + ' is now playing!```');
+            this.currentSongPlayingMessage = await this.textChannel.send('```' + song.title + ' is now playing!```');
             console.log("Trying to set up reacts");
             try {
                 console.log("React: Trying to set up Pause");
-                await currentSongPlayingMessage.react("⏸");
+                await this.currentSongPlayingMessage.react("⏸");
                 console.log("React: Trying to set up Stop");
-                await currentSongPlayingMessage.react("🛑");
+                await this.currentSongPlayingMessage.react("🛑");
                 console.log("React: Trying to set up Skip");
-                await currentSongPlayingMessage.react("⏩");
+                await this.currentSongPlayingMessage.react("⏩");
                 console.log("React: Trying to set up Repeat");
-                await currentSongPlayingMessage.react("🔄");
+                await this.currentSongPlayingMessage.react("🔄");
             } catch (error) {
                 console.log("Problem with reacts: " + error.message);
             }
@@ -339,8 +339,8 @@ class MusicBot {
         }
 
 
-        console.log("Changing status of playerStatus from: " + playerStatus + "\n\tto True.");
-        playerStatus = true;
+        console.log("Changing status of playerStatus from: " + this.playerStatus + "\n\tto True.");
+        this.playerStatus = true;
 
         //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
         //Add filter in ytdl(): Error with dispatcher: Status code: 429
@@ -353,8 +353,8 @@ class MusicBot {
             }), { type: 'opus' })
                 .on('finish', () => {
                     console.log("Current song ended.");
-                    currentSongPlayingMessage.edit('```' + song.title + ' is finished.```');
-                    currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                    this.currentSongPlayingMessage.edit('```' + song.title + ' is finished.```');
+                    this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
                     console.log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                     if (serverQueue.voiceChannel.members.array().length <= 1
@@ -362,19 +362,19 @@ class MusicBot {
                         console.log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
                         //Maybe only need to call stop method?
                         serverQueue.voiceChannel.leave();
-                        queue.delete(guild.id);
+                        this.queue.delete(guild.id);
                         console.log('Resources cleared.');
                         return;
                     }
 
-                    console.log("Repeating is currently: " + repeat);
-                    if (!repeat) {
+                    console.log("Repeating is currently: " + this.repeat);
+                    if (!this.repeat) {
                         console.log('Repeat is off! Attempting to play next song.');
                         serverQueue.songs.shift();
                     }
                     else {
                         console.log('Repeat is on! Attempting to play same song.');
-                        currentSongPlayingMessage.edit('```' + song.title + ' is repeating. Playing again!```');
+                        this.currentSongPlayingMessage.edit('```' + song.title + ' is repeating. Playing again!```');
                     }
                     play(guild, serverQueue.songs[0]);
                 })
@@ -386,31 +386,31 @@ class MusicBot {
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
             console.log('Resetting eventHandler to listen to new events.');
-            eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
+            this.eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
 
             console.log('Listening for stop events.');
-            eventHandler.on('stop', function () {
+            this.eventHandler.on('stop', function () {
                 console.log("Destroying connection.");
-                currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 dispatcher.end();
             });
 
             console.log('Listening for pause events.');
-            eventHandler.on('pause', async function () {
+            this.eventHandler.on('pause', async function () {
                 console.log("Pausing player.");
                 dispatcher.pause();
-                currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                this.currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
                 try {
                     console.log("Trying to set up reacts");
                     console.log("React: Trying to set up Play");
-                    await currentSongPlayingMessage.react("▶️");
+                    await this.currentSongPlayingMessage.react("▶️");
                     console.log("React: Trying to set up Stop");
-                    await currentSongPlayingMessage.react("🛑");
+                    await this.currentSongPlayingMessage.react("🛑");
                     console.log("React: Trying to set up Skip");
-                    await currentSongPlayingMessage.react("⏩");
+                    await this.currentSongPlayingMessage.react("⏩");
                     console.log("React: Trying to set up Repeat");
-                    await currentSongPlayingMessage.react("🔄");
+                    await this.currentSongPlayingMessage.react("🔄");
                 } catch (error) {
                     console.log("Problem with reacts: " + error.message);
                 }
@@ -418,39 +418,39 @@ class MusicBot {
             });
 
             console.log('Listening for resume events.');
-            eventHandler.on('resume', async function () {
+            this.eventHandler.on('resume', async function () {
                 console.log("Resuming player.");
                 dispatcher.resume();
-                currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
+                this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+                this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
                     console.log("Trying to set up reacts");
                     console.log("React: Trying to set up Pause");
-                    await currentSongPlayingMessage.react("⏸");
+                    await this.currentSongPlayingMessage.react("⏸");
                     console.log("React: Trying to set up Stop");
-                    await currentSongPlayingMessage.react("🛑");
+                    await this.currentSongPlayingMessage.react("🛑");
                     console.log("React: Trying to set up Skip");
-                    await currentSongPlayingMessage.react("⏩");
+                    await this.currentSongPlayingMessage.react("⏩");
                     console.log("React: Trying to set up Repeat");
-                    await currentSongPlayingMessage.react("🔄");
+                    await this.currentSongPlayingMessage.react("🔄");
                 } catch (error) {
                     console.log("Problem with reacts: " + error.message);
                 }
             });
         } catch (error) {
             console.log("Error with dispatcher: " + error.message);
-            if (tryThisManyTimes > 0) {
-                tryThisManyTimes = tryThisManyTimes - 1;
-                console.log("Problem with dispatcher will try again. Number of tries remaining: " + tryThisManyTimes);
+            if (this.tryThisManyTimes > 0) {
+                this.tryThisManyTimes = this.tryThisManyTimes - 1;
+                console.log("Problem with dispatcher will try again. Number of tries remaining: " + this.tryThisManyTimes);
                 play(guild, song);
 
             }
             else {
                 console.log("Out of tries to play dispatcher.");
-                currentSongPlayingMessage.edit('```' + song.title + ' is having issues playing. Skipping to next song!```');
+                this.currentSongPlayingMessage.edit('```' + song.title + ' is having issues playing. Skipping to next song!```');
 
                 //Try to play next song.
-                tryThisManyTimes = numberOfTriesAllowed;
+                this.tryThisManyTimes = this.numberOfTriesAllowed;
                 serverQueue.songs.shift();
                 play(guild, serverQueue.songs[0]);
             }
