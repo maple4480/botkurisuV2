@@ -99,11 +99,12 @@ client.on('message', (message) => {
     else if (message.content.startsWith("`pause")) {
         //pause(message);
         console.log("Let musicBot deal with pause");
-        musicBot.pause(message);
+        musicBot.pause();
         return;
     }
     else if (message.content.startsWith("`resume")) {
-        resume(message);
+        console.log("Let musicBot deal with resume");
+        musicBot.resume();
         return;
     }
     else if (message.content.startsWith("`help")) {
@@ -140,7 +141,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
     else if (emoji.name == '▶️') {
         console.log("user selected play emoji");
-        eventHandler.emit('resume');
+        //eventHandler.emit('resume');
+        musicBot.resume();
     }
     else if (emoji.name == '🛑') {
         console.log("user selected stop emoji");
@@ -457,40 +459,40 @@ function skip(message, serverQueue) {
     
 }
 
-function stop(message, serverQueue) {
-    log('Entering stop function.');
-    try {
-        if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
-        if(!serverQueue) return log('No need to clean any resources.');;
-        log('Beginning to clean up unused resources.');
+// function stop(message, serverQueue) {
+//     log('Entering stop function.');
+//     try {
+//         if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
+//         if(!serverQueue) return log('No need to clean any resources.');;
+//         log('Beginning to clean up unused resources.');
 
-        log('Setting player status to false.');
-        playerStatus = false;
+//         log('Setting player status to false.');
+//         playerStatus = false;
 
-        log('Setting repeat to false.');
-        repeat = false;
+//         log('Setting repeat to false.');
+//         repeat = false;
 
-        log('Attempting to leave voice channel.');
-        serverQueue.voiceChannel.leave();
+//         log('Attempting to leave voice channel.');
+//         serverQueue.voiceChannel.leave();
 
-        log('Clearing all songs in the queue.');
-        serverQueue.songs = [];
+//         log('Clearing all songs in the queue.');
+//         serverQueue.songs = [];
 
-        log('Requesting that the current song end.');
-        eventHandler.emit('stop'); 
+//         log('Requesting that the current song end.');
+//         eventHandler.emit('stop'); 
 
-        log('Deleting connection');
-        queue.delete(message.guild.id);
+//         log('Deleting connection');
+//         queue.delete(message.guild.id);
 
-        display(message, 'Stop requested.');
-        log('Completed clean up for unused resources.');
-    }
-    catch (err) {
-        log('ERROR: Unable to stop the music. ' + err.message);
-        display(message, 'Stop requested. But Unable to complete request.');
-    }
-    log('Finished Stop function.');
-}
+//         display(message, 'Stop requested.');
+//         log('Completed clean up for unused resources.');
+//     }
+//     catch (err) {
+//         log('ERROR: Unable to stop the music. ' + err.message);
+//         display(message, 'Stop requested. But Unable to complete request.');
+//     }
+//     log('Finished Stop function.');
+// }
 
 // async function play(guild, song) {
 //     log("Starting play method.");
@@ -761,27 +763,27 @@ function display(message, text) {
 //     }
 //     return;
 // }
-function resume(message) {
-    log("Requesting player to resume.");
-    try {
-        if(playerStatus){
-            log("Confirmed player has been turned on. Now emitting the resume event.");
-            eventHandler.emit('resume'); 
-            // log('Setting player status to false.');
-            // playerStatus = false;
-            display(message, "The player will now resume.");
-        }
-        else{
-            log("Confirmed player is off. Refusing to emit resume event.");
-            display(message, "There is nothing to resume as the player is not playing.");
-        }
-    }
-    catch (error) {
-        log("ERROR: Trying to resume music.");
-    }
+// function resume(message) {
+//     log("Requesting player to resume.");
+//     try {
+//         if(playerStatus){
+//             log("Confirmed player has been turned on. Now emitting the resume event.");
+//             eventHandler.emit('resume'); 
+//             // log('Setting player status to false.');
+//             // playerStatus = false;
+//             display(message, "The player will now resume.");
+//         }
+//         else{
+//             log("Confirmed player is off. Refusing to emit resume event.");
+//             display(message, "There is nothing to resume as the player is not playing.");
+//         }
+//     }
+//     catch (error) {
+//         log("ERROR: Trying to resume music.");
+//     }
     
-    return;
-}
+//     return;
+// }
 function log(msg){
     var DateTime = new Date();
     var hours = DateTime.getHours() % 12;

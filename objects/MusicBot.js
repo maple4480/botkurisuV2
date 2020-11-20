@@ -472,6 +472,62 @@ class MusicBot {
         }
         return;
     }
+    async resume(){
+        console.log("Requesting player to resume.");
+        try {
+            if(this.playerStatus){
+                console.log("Confirmed player has been turned on. Now emitting the resume event.");
+                this.eventHandler.emit('resume'); 
+                // Reactions here
+                this.currentSongPlayingMessage.edit("The player will now resume.");
+            }
+            else{
+                console.log("Confirmed player is off. Refusing to emit resume event.");
+            }
+        }
+        catch (error) {
+            log("ERROR: Trying to resume music.");
+        }
+        return;
+    }
+    stop(message) {
+        console.log('Entering stop function.');
+
+        const serverQueue = this.queue.get(message.guild.id);
+
+        try {
+            if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
+            if(!serverQueue) return console.log('No need to clean any resources.');;
+            console.log('Beginning to clean up unused resources.');
+    
+            console.log('Setting player status to false.');
+            this.playerStatus = false;
+    
+            console.log('Setting repeat to false.');
+            this.repeat = false;
+    
+            console.log('Attempting to leave voice channel.');
+            serverQueue.voiceChannel.leave();
+    
+            console.log('Clearing all songs in the queue.');
+            serverQueue.songs = [];
+    
+            console.log('Requesting that the current song end.');
+            this.eventHandler.emit('stop'); 
+    
+            console.log('Deleting connection');
+            this.queue.delete(message.guild.id);
+    
+            message.channel.send('Stop requested.');
+            console.log('Completed clean up for unused resources.');
+        }
+        catch (err) {
+            console.log('ERROR: Unable to stop the music. ' + err.message);
+            message.channel.send('Stop requested. But Unable to complete request.');
+        }
+        console.log('Finished Stop function.');
+    }
+    
 
 }
 
