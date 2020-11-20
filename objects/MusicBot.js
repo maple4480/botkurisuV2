@@ -7,7 +7,7 @@ class MusicBot {
         this.youtube = new Youtube(GOOGLE_API);
 
         this.botID=botID;
-        
+
         //Database
         const admin = require('firebase-admin');
         admin.initializeApp({
@@ -571,6 +571,10 @@ class MusicBot {
         }
         console.log('Finished skip method.');
         return returnMsg;
+    }
+    get playerStatus(){
+        console.log("Sending current player status of: "+this.playerStatus);
+        return this.playerStatus;
     }
 }
 

@@ -132,7 +132,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     console.log("Reaction sent is not from a bot");
     if (!message.author.bot) return; //Only process messages that are from the bot
     console.log("Only process on bot messages");
-    if (!playerStatus) return; //Should not do anything if the player isn't playing
+    if (!musicBot.playerStatus) return; //Should not do anything if the player isn't playing
     console.log("Player is playing.");
 
     console.log("The user who sent the reaction is: "+user);
