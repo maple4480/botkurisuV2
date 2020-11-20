@@ -492,7 +492,7 @@ async function play(guild, song) {
     if (!song) {
         log('No more songs left to play. Changing player status to false.');
         playerStatus = false;
-        queue.delete(message.guild.id);
+        queue.delete(guild.id);
         // timeoutID = setTimeout(function () {
         //     log('Waited long enough, now exiting...');
         //     serverQueue.voiceChannel.leave();
