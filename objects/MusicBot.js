@@ -2,7 +2,7 @@
 
 class MusicBot {
     constructor(GOOGLE_API, SERVICE_ACCOUNT, botID, dbRef) {
-        const ytdl = require('ytdl-core-discord');
+        this.ytdl = require('ytdl-core-discord');
         const Youtube = require('simple-youtube-api');
         this.youtube = new Youtube(GOOGLE_API);
 
