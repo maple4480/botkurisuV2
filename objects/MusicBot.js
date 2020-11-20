@@ -84,7 +84,6 @@ class MusicBot {
             title: video.title,
             url: `https://www.youtube.com/watch?v=${video.id}`
         };
-        console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
         //Add song to db later
         // try {
@@ -125,7 +124,7 @@ class MusicBot {
 
                 console.log('\t\tAttemping to start player.');
                 //currentSongMessage = await message.channel.send("Currently Playing: "+song.title);
-                play(message.guild, queueContruct.songs[0]);
+                this.play(message.guild, queueContruct.songs[0]);
             } catch (error) {
                 console.log('ERROR: Unable to establish connection/play first song. ' + error.message);
                 message.channel.send( "Error detected.");
@@ -145,7 +144,7 @@ class MusicBot {
 
                     if (!this.playerStatus) {
                         console.log('\t\tAttemping to start player.');
-                        play(message.guild, queueContruct.songs[0]);
+                        this.play(message.guild, queueContruct.songs[0]);
                     }
                 }
             }
@@ -376,7 +375,7 @@ class MusicBot {
                         console.log('Repeat is on! Attempting to play same song.');
                         this.currentSongPlayingMessage.edit('```' + song.title + ' is repeating. Playing again!```');
                     }
-                    play(guild, serverQueue.songs[0]);
+                    this.play(guild, serverQueue.songs[0]);
                 })
                 .on('error', error => {
                     console.log("Error in dispatcher: " + error.message);
@@ -442,7 +441,7 @@ class MusicBot {
             if (this.tryThisManyTimes > 0) {
                 this.tryThisManyTimes = this.tryThisManyTimes - 1;
                 console.log("Problem with dispatcher will try again. Number of tries remaining: " + this.tryThisManyTimes);
-                play(guild, song);
+                this.play(guild, song);
 
             }
             else {
@@ -452,7 +451,7 @@ class MusicBot {
                 //Try to play next song.
                 this.tryThisManyTimes = this.numberOfTriesAllowed;
                 serverQueue.songs.shift();
-                play(guild, serverQueue.songs[0]);
+                this.play(guild, serverQueue.songs[0]);
             }
         }
         console.log("Finished play method.");
