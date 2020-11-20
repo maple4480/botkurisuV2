@@ -297,13 +297,15 @@ class MusicBot {
         console.log('Finished execute method.');
     }
 
+
     async play(guild, song) {
         console.log("Starting play method.");
         const serverQueue = this.queue.get(guild.id);
 
         if (!song) {
             console.log('No more songs left to play. Changing player status to false.');
-            this.playerStatus = false;
+            //No more songs clear resources but do not leave channel
+            this.queue.delete(guild.id);
             // timeoutID = setTimeout(function () {
             //     console.log('Waited long enough, now exiting...');
             //     serverQueue.voiceChannel.leave();
@@ -393,8 +395,6 @@ class MusicBot {
             this.eventHandler.on('pause', function () {
                 console.log("Entering real pause.");
                 dispatcher.pause();
-                
-
             });
             console.log('Listening for resume events.');
             this.eventHandler.on('resume', function () {
@@ -461,7 +461,6 @@ class MusicBot {
                 this.eventHandler.emit('resume'); 
                 
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-                //this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
                     console.log("Trying to set up reacts");
                     console.log("React: Trying to set up Pause");
@@ -495,31 +494,34 @@ class MusicBot {
 
         try {
             if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
-            if(!serverQueue) return console.log('No need to clean any resources.');;
+            if(!serverQueue) return console.log('No need to clean any resources.');
             console.log('Beginning to clean up unused resources.');
-    
+
+            //Remove this and put into leave method
+            console.log('Attempting to leave voice channel.');
+            serverQueue.voiceChannel.leave();
+
+            console.log('Requesting that the current song end.');
+            this.eventHandler.emit('stop'); 
+
             console.log('Clearing reactions.');
             this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
             console.log('Setting player status to false.');
             this.playerStatus = false;
-    
+
             console.log('Setting repeat to false.');
             this.repeat = false;
-    
-            console.log('Attempting to leave voice channel.');
-            serverQueue.voiceChannel.leave();
-    
+
             console.log('Clearing all songs in the queue.');
             serverQueue.songs = [];
-    
-            console.log('Requesting that the current song end.');
-            this.eventHandler.emit('stop'); 
-    
+
+            console.log('Resetting eventHandler to listen to new events.');
+            this.eventHandler = new this.events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
+
             console.log('Deleting connection');
             this.queue.delete(message.guild.id);
-    
-            message.channel.send('Stop requested.');
+
             console.log('Completed clean up for unused resources.');
         }
         catch (err) {
