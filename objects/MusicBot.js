@@ -547,9 +547,9 @@ class MusicBot {
     //Returns sucesss msg or why it couldn't skip
     skip(message) {
         console.log('Starting skip method.');
+        var returnMsg ="";
         try {
             const serverQueue = this.queue.get(message.guild.id);
-            var returnMsg ="";
             if (!message.member.voice.channel) return 'You have to be in a voice channel to stop the music!';
             if (!serverQueue) return 'There is no song that I could skip!';
     
