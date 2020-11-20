@@ -70,7 +70,7 @@ client.on('message', (message) => {
         musicBot.execute(message, serverQueue);
         return;
     } else if (message.content.startsWith("`skip")) {
-        skip(message, serverQueue);
+        musicBot.skip(message);
         return;
     } else if (message.content.startsWith("`stop")) {
         console.log("Let musicBot deal with stop");
@@ -150,7 +150,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
     else if (emoji.name == '⏩') {
         console.log("user selected skip emoji");
-        skip(message, queue.get(message.guild.id) );
+        musicBot.skip(message);
     }
     else if (emoji.name == '🔄') {
         console.log("user selected repeat emoji");
@@ -438,40 +438,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
 // }
 
-function skip(message, serverQueue) {
-    log('Starting skip method.');
-    try {
-        if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
-        if (!serverQueue) return display(message, 'There is no song that I could skip!');
-
-        log('Setting repeat to false.');
-        repeat = false;
-
-        log("Now skipping current song.");
-        serverQueue.connection.dispatcher.end();
-        display(message, 'Skipping the current song!');
-    }
-    catch (err) {
-        log("ERROR: Unable to skip current song! " + err);
-        display(message, 'Unable to skip current song.');
-    }
-    log('Finished skip method.');
-    
-}
-
-
-// function currentPlaying(message, serverQueue) {
-//     log("Starting currentPlaying method.");
-//     try{
-//         display(message, 'Currently Playing...' + serverQueue.songs[0].title);
-//         log('Currently Playing...' + serverQueue.songs[0].title);
-//     }
-//     catch(error){
-//         display(message, 'Nothing is playing.');
-//         log('Either nothing is playing or error is: ' +error.message);
-//     }
-//     log("Finishing currentPlaying method.");
-// }
 function repeatSong(message, serverQueue) {
     log("Starting repeatSong method.");
     try{

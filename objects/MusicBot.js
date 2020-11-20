@@ -544,6 +544,29 @@ class MusicBot {
         console.log("Finishing currentPlaying method.");
         return currentSong;
     }
+    //Returns sucesss msg or why it couldn't skip
+    skip(message) {
+        console.log('Starting skip method.');
+        try {
+            const serverQueue = this.queue.get(message.guild.id);
+            var returnMsg ="";
+            if (!message.member.voice.channel) return 'You have to be in a voice channel to stop the music!';
+            if (!serverQueue) return 'There is no song that I could skip!';
+    
+            console.log('Setting repeat to false.');
+            this.repeat = false;
+    
+            console.log("Now skipping current song.");
+            serverQueue.connection.dispatcher.end();
+            returnMsg = 'Skipping the current song!';
+        }
+        catch (err) {
+            console.log("ERROR: Unable to skip current song! " + err.message);
+            returnMsg= 'Unable to skip current song.';
+        }
+        console.log('Finished skip method.');
+        return returnMsg;
+    }
 }
 
 //export MusicBot so other modules can use
