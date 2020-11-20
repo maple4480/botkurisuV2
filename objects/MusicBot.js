@@ -353,10 +353,12 @@ class MusicBot {
                     this.currentSongPlayingMessage.edit('```' + song.title + ' is finished.```');
                     this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
-                    console.log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
+                    console.log("Checking if anyone is in voice channel: "+serverQueue.voiceChannel.members.array().length);
+                    console.log("Checking if I am still in voice channel: "+serverQueue.voiceChannel.members.get(this.botID));
+
                     if (serverQueue.voiceChannel.members.array().length <= 1
                         || serverQueue.voiceChannel.members.get(this.botID) === undefined) {
-                        console.log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
+                        console.log("Delete queue and leave since no one is in the voice channel.");
                         //Maybe only need to call stop method?
                         serverQueue.voiceChannel.leave();
                         this.queue.delete(guild.id);
@@ -544,7 +546,8 @@ class MusicBot {
         console.log("Finishing currentPlaying method.");
         return currentSong;
     }
-    //Returns sucesss msg or why it couldn't skip
+    //Returns sucesss msg or why it couldn't skip 
+    //Still working on skipping
     skip(message) {
         console.log('Starting skip method.');
         var returnMsg ="";
