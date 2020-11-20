@@ -6,6 +6,8 @@ class MusicBot {
         const Youtube = require('simple-youtube-api');
         this.youtube = new Youtube(GOOGLE_API);
 
+        this.botID=botID;
+        
         //Database
         const admin = require('firebase-admin');
         admin.initializeApp({

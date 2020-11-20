@@ -70,6 +70,7 @@ client.on('message', (message) => {
         musicBot.execute(message, serverQueue);
         return;
     } else if (message.content.startsWith("`skip")) {
+        console.log("Skipping current song from bot.");
         musicBot.skip(message);
         return;
     } else if (message.content.startsWith("`stop")) {
@@ -77,6 +78,7 @@ client.on('message', (message) => {
         musicBot.stop(message);
         return;
     } else if (message.content.startsWith("`song")) {
+        console.log("Getting current song from bot.");
         message.channel.send("```"+musicBot.currentPlaying(message)+" is now playing!```" );
         return;
     }
