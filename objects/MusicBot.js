@@ -39,10 +39,10 @@ class MusicBot {
         console.log('Checking my permissions.');
         const voiceChannel = message.member.voice.channel;
         if (!voiceChannel)
-            return display(message, 'You need to be in a voice channel to play music!');
+            return message.channel.send( 'You need to be in a voice channel to play music!');
         const permissions = voiceChannel.permissionsFor(message.client.user);
         if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-            return display(message, 'I need the permissions to join and speak in your voice channel!');
+            return message.channel.send( 'I need the permissions to join and speak in your voice channel!');
         }
         console.log('Correct permissions received!');
 
@@ -73,7 +73,7 @@ class MusicBot {
             }
             catch (err) {
                 console.log("ERROR: No video found with this search string: " + searchString + '\nError: ' + err.message);
-                display(message, 'No video found.');
+                message.channel.send( 'No video found.');
                 return;
             }
         }
@@ -112,7 +112,7 @@ class MusicBot {
 
             queueContruct.songs.push(song);
             console.log("\t\tSong added to queue: " + song.title);
-            display(message, song.title + " added to the queue!");
+            message.channel.send( song.title + " added to the queue!");
 
             try {
                 //May be needed if song ends?
@@ -127,7 +127,7 @@ class MusicBot {
                 play(message.guild, queueContruct.songs[0]);
             } catch (error) {
                 console.log('ERROR: Unable to establish connection/play first song. ' + error.message);
-                display(message, "Error detected.");
+                message.channel.send( "Error detected.");
 
                 console.log('Performing clean up.');
                 queue.delete(message.guild.id);
@@ -150,10 +150,10 @@ class MusicBot {
             }
             catch (error) {
                 console.log("ERROR: Unable to add song to queue. " + error.message);
-                display(message, "Unable to add the video to queue.");
+                message.channel.send( "Unable to add the video to queue.");
             }
 
-            display(message, `${song.title} has been added to the queue!`);
+            message.channel.send( `${song.title} has been added to the queue!`);
             return console.log('Finished execute method.');
         }
 
@@ -174,7 +174,7 @@ class MusicBot {
         //             }
         //             catch (err) {
         //                 console.log("ERROR: No video found. Will now stop searching for a video from: " + url);
-        //                 display(message, 'No video found.');
+        //                 message.channel.send( 'No video found.');
         //                 return;
         //             }
         //         }
@@ -184,7 +184,7 @@ class MusicBot {
         //             url: `https://www.youtube.com/watch?v=${video.id}`
         //         };
         //         console.log(song.title + "...has been added.");
-        //         //display(message, song.title + "...has been added.");
+        //         //message.channel.send( song.title + "...has been added.");
         //         if (queue.get(message.guild.id) == null) {
         //             console.log("Generating serverQueue..");
         //             const queueContruct = {
@@ -197,7 +197,7 @@ class MusicBot {
         //             };
         //             queue.set(message.guild.id, queueContruct);
         //             queueContruct.songs.push(song);
-        //             display(message, song.title + "...has been added.");
+        //             message.channel.send( song.title + "...has been added.");
         //             try {
         //                 voiceChannel.leave();
         //                 console.log('Trying to join channel.');
@@ -208,7 +208,7 @@ class MusicBot {
         //             } catch (err) {
         //                 console.log('ERROR: Unable to establish connection and play first song. '+err);
         //                 queue.delete(message.guild.id);
-        //                 return display(message, err);
+        //                 return message.channel.send( err);
         //             }
         //         } else {
         //             try {
@@ -225,10 +225,10 @@ class MusicBot {
         //             }
         //             catch (err) {
         //                 console.log("ERROR: Unable to add song to queue. " + err);
-        //                 display(message, "Unable to add the video to queue.");
+        //                 message.channel.send( "Unable to add the video to queue.");
         //                 return;
         //             }
-        //             return display(message, `${song.title} has been added to the queue!`);
+        //             return message.channel.send( `${song.title} has been added to the queue!`);
         //         }
         //     }
         //     else {
@@ -262,7 +262,7 @@ class MusicBot {
         //                     console.log(err);
         //                 }
         //             });
-        //             display(message, `**${playlist['title']}** playlist has been added to the queue!`);
+        //             message.channel.send( `**${playlist['title']}** playlist has been added to the queue!`);
         //             //shuffle(message, queueContruct);
         //             try {
         //                 //NEW CODE
@@ -276,9 +276,9 @@ class MusicBot {
         //                 play(message.guild, queueContruct.songs[0]);
         //             } catch (err) {
         //                 console.log("ERROR: Playlist/Joining, playing first playlist song.");
-        //                 display(message, 'I am unable to join, or start the music...');
+        //                 message.channel.send( 'I am unable to join, or start the music...');
         //                 queue.delete(message.guild.id);
-        //                 return display(message, err);
+        //                 return message.channel.send( err);
         //             }
         //         } else {
         //             console.log('Bot is playing.. will add new playlist songs to queue.');
@@ -292,7 +292,7 @@ class MusicBot {
         //                     serverQueue.songs.push(song);
         //                 }
         //             });
-        //             display(message, `**${playlist['title']}** playlist has been added to the queue!`);
+        //             message.channel.send( `**${playlist['title']}** playlist has been added to the queue!`);
         //         }
         //     }
         // });
