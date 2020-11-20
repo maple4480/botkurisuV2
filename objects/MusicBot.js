@@ -343,7 +343,7 @@ class MusicBot {
         //Add filter in ytdl(): Error with dispatcher: Status code: 429
         //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
         try {
-            const dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
+            this.dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
                 filter: format => ['251'],
                 quality: 'highestaudio',
                 highWaterMark: 1 << 25
@@ -380,7 +380,7 @@ class MusicBot {
                 });
 
             console.log('Setting song volume to 50%');
-            dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+            this.dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
             console.log('Resetting eventHandler to listen to new events.');
             this.eventHandler = new this.events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
@@ -394,8 +394,8 @@ class MusicBot {
 
             console.log('Listening for pause events.');
             this.eventHandler.on('pause', async function () {
-                console.log("Pausing player.");
-                dispatcher.pause();
+                console.log("Entering real pause.");
+                this.dispatcher.pause();
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 this.currentSongPlayingMessage.edit('```' + song.title + ' is paused.```');
                 try {
@@ -417,7 +417,7 @@ class MusicBot {
             console.log('Listening for resume events.');
             this.eventHandler.on('resume', async function () {
                 console.log("Resuming player.");
-                dispatcher.resume();
+                this.dispatcher.resume();
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 this.currentSongPlayingMessage.edit('```' + song.title + ' is now playing!```');
                 try {
