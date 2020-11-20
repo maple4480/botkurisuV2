@@ -90,11 +90,6 @@ client.on('message', (message) => {
         getQueue(message, serverQueue);
         return;
     }
-    else if (message.content.startsWith("`degen")) {
-        message.content = '`play ' + degen;
-        execute(message, serverQueue);
-        return;
-    }
     else if (message.content.startsWith("`shuffle")) {
         shuffle(message, serverQueue);
         return;
@@ -130,11 +125,15 @@ client.on('message', (message) => {
     }
 });
 client.on('messageReactionAdd', async (reaction, user) => {
+    console.log("Message reaction received.");
     let message = reaction.message, emoji = reaction.emoji;
  
     if (user.bot) return; //Ignore reacts sent by the bot
+    console.log("Reaction sent is not from a bot");
     if (!message.author.bot) return; //Only process messages that are from the bot
+    console.log("Only process on bot messages");
     if (!playerStatus) return; //Should not do anything if the player isn't playing
+    console.log("Player is playing.");
 
     console.log("The user who sent the reaction is: "+user);
 
@@ -160,131 +159,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
         reaction.remove(user);
         await currentSongPlayingMessage.react("🔄"); //Repeat is a special case. Need to regenerate after removing.
     }
-
-
+    console.log("Message reaction processing completed.");
 });
-// async function execute(message, serverQueue) {
-//     log('Starting execute method.');
-//     log('Checking my permissions.');
-//     const voiceChannel = message.member.voice.channel;
-//     if (!voiceChannel) return display(message, 'You need to be in a voice channel to play music!');
-//     const permissions = voiceChannel.permissionsFor(message.client.user);
-//     if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-//         return display(message, 'I need the permissions to join and speak in your voice channel!');
-//     }
-//     log('Correct permissions received!');
-
-//     log('Cleaning song argument');
-//     const args = message.content.split(' ');
-//     if (args[1] === undefined) {
-//         log('No argument received.');
-//         return;
-//     }
-//     const url = args[1].replace(/<(.+)>/g, '$1');
-//     const searchString = args.slice(1).join(' ');
-
-//     log('\targs: '+args+' \n\tURL: '+url+' \n\tsearchString: '+ searchString+'\nCleaned song argument.');
-//     //Currently only allows one youtube video to play.
-//     log('Attemping to gather information on video.');
-//     try {
-//         var video = await youtube.getVideo(url);
-//     }
-//     catch (error) {
-//         log("This may not be a URL link: "+searchString);
-//         log("Error: "+error.message);
-
-//         try {
-//             log("Attemping to search with arguments: "+searchString);
-//             var videos = await youtube.searchVideos(searchString, 1);
-//             var video = await youtube.getVideoByID(videos[0].id);
-//             log("Video found: "+video.id);
-//         }
-//         catch (err) {
-//             log("ERROR: No video found with this search string: " + searchString + '\nError: '+err.message);
-//             display(message, 'No video found.');
-//             return;
-//         }
-//     }
-
-//     log("Generating song information");
-//     const song = {
-//         id: video.id,
-//         title: video.title,
-//         url: `https://www.youtube.com/watch?v=${video.id}`
-//     };
-//     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
-
-//     try{
-//         DB_add(song);
-//     }catch(error)
-//     {
-//         console.log("ERROR unable to update database.");
-//     }
-//     log('\tsong.id: '+song.id+' \n\tsong.title: '+song.title+' \n\tsong.url: '+ song.url+"\nGenerated song information");
-
-//     log("Checking if a queue exists for this guild id: "+message.guild.id);
-//     if (queue.get(message.guild.id) == null) {
-//         log("\tqueue does not exist for this guild id: "+message.guild.id);
-//         const queueContruct = {
-//             textChannel: message.channel,
-//             voiceChannel: voiceChannel,
-//             connection: null,
-//             songs: [],
-//             volume: 5,
-//             playing: true,
-//         };
-//         queue.set(message.guild.id, queueContruct);
-//         log("\t\tQueue generated and set for this guild id: "+message.guild.id);
-
-//         textChannel = message.channel;
-//         log("Reference to the current text channel saved!");
-
-//         queueContruct.songs.push(song);
-//         log("\t\tSong added to queue: "+song.title);
-//         display(message, song.title + " added to the queue!");
-
-//         try{
-//             //May be needed if song ends?
-//             // voiceChannel.leave();
-//             log('\t\tAttemping to join channel.');
-//             var connection = await voiceChannel.join();
-//             queueContruct.connection = connection;
-//             log('\t\tChannel joined.');
-
-//             log('\t\tAttemping to start player.');
-//             //currentSongMessage = await message.channel.send("Currently Playing: "+song.title);
-//             play(message.guild, queueContruct.songs[0]);
-//         }catch(error){
-//             log('ERROR: Unable to establish connection/play first song. '+error.message);
-//             display(message,"Error detected.");
-            
-//             log('Performing clean up.');
-//             queue.delete(message.guild.id);
-//             voiceChannel.leave();
-//         }
-//     }
-//     else{
-//         log("\tqueue exists for this guild id: "+message.guild.id);
-//         try {
-//             log("\t\tAdding song to queue.");
-//             const queueContruct = queue.get(message.guild.id);
-//             if(queueContruct){
-//                 queueContruct.songs.push(song);
-                
-//                 if(!playerStatus){
-//                     log('\t\tAttemping to start player.');
-//                     play(message.guild, queueContruct.songs[0]);
-//                 }
-//             }
-//         }
-//         catch (error) {
-//             log("ERROR: Unable to add song to queue. " + error.message);
-//             display(message, "Unable to add the video to queue.");
-//         }
-        
-//         display(message, `${song.title} has been added to the queue!`);
-//         return log('Finished execute method.');
-//     }
 
 //     // ytpl(url, async function (err, playlist) {
 //     //     if (err) {
