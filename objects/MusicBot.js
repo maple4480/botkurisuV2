@@ -21,8 +21,8 @@ class MusicBot {
 
 
         //Used for stop,pause, and resume functionality to reach dispatcher
-        var events = require('events');
-        this.eventHandler = new events.EventEmitter();
+        this.events = require('events');
+        this.eventHandler = new this.events.EventEmitter();
 
         this.textChannel; //Keep a reference to the text channel, the queueConstruct was created in. Used to display current song playing.
 
@@ -385,7 +385,7 @@ class MusicBot {
             dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
             console.log('Resetting eventHandler to listen to new events.');
-            this.eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
+            this.eventHandler = new this.events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
 
             console.log('Listening for stop events.');
             this.eventHandler.on('stop', function () {
