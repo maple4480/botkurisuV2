@@ -572,7 +572,7 @@ class MusicBot {
         console.log('Finished skip method.');
         return returnMsg;
     }
-    get playerStatus(){
+    playerStatus(){
         console.log("Sending current player status of: "+this.playerStatus);
         return this.playerStatus;
     }
