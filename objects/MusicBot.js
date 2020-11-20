@@ -115,8 +115,6 @@ class MusicBot {
             message.channel.send( song.title + " added to the queue!");
 
             try {
-                //May be needed if song ends?
-                // voiceChannel.leave();
                 console.log('\t\tAttemping to join channel.');
                 var connection = await voiceChannel.join();
                 queueContruct.connection = connection;
@@ -357,7 +355,7 @@ class MusicBot {
 
                     console.log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
                     if (serverQueue.voiceChannel.members.array().length <= 1
-                        || serverQueue.voiceChannel.members.get(botID) === undefined) {
+                        || serverQueue.voiceChannel.members.get(this.botID) === undefined) {
                         console.log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
                         //Maybe only need to call stop method?
                         serverQueue.voiceChannel.leave();
@@ -456,17 +454,17 @@ class MusicBot {
         }
         console.log("Finished play method.");
     }
-    pause(message) {
+    pause() {
         console.log("Requesting player pause.");
         try {
             if(this.playerStatus){
                 console.log("Confirmed player has been turned on. Now emitting the pause event.");
                 this.eventHandler.emit('pause'); 
-                message.channel.send("The player has been paused.");
+                currentSongPlayingMessage.edit('```The player has been paused.```');
             }
             else{
                 console.log("Confirmed player is off. Refusing to emit pause event.");
-                message.channel.send(message, "There is nothing to pause as the player is not playing.");
+                currentSongPlayingMessage.edit("There is nothing to pause as the player is not playing.");
             }
         }
         catch (error) {

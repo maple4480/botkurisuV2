@@ -97,7 +97,9 @@ client.on('message', (message) => {
         return;
     }
     else if (message.content.startsWith("`pause")) {
-        pause(message);
+        //pause(message);
+        console.log("Let musicBot deal with pause");
+        musicBot.pause(message);
         return;
     }
     else if (message.content.startsWith("`resume")) {
@@ -134,7 +136,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
     if (emoji.name == '⏸') {
         console.log("user selected pause emoji");
-        eventHandler.emit('pause');
+        musicBot.pause();
     }
     else if (emoji.name == '▶️') {
         console.log("user selected play emoji");
@@ -741,25 +743,24 @@ function display(message, text) {
     }
     return;
 }
-function pause(message) {
-    log("Requesting player pause.");
-    try {
-        if(playerStatus){
-            log("Confirmed player has been turned on. Now emitting the pause event.");
-            eventHandler.emit('pause'); 
-            display(message, "The player has been paused.");
-        }
-        else{
-            log("Confirmed player is off. Refusing to emit pause event.");
-            display(message, "There is nothing to pause as the player is not playing.");
-        }
-    }
-    catch (error) {
-        log("ERROR: Trying to pause music. "+error.message);
-    }
-    return;
-    
-}
+// function pause(message) {
+//     log("Requesting player pause.");
+//     try {
+//         if(playerStatus){
+//             log("Confirmed player has been turned on. Now emitting the pause event.");
+//             eventHandler.emit('pause'); 
+//             display(message, "The player has been paused.");
+//         }
+//         else{
+//             log("Confirmed player is off. Refusing to emit pause event.");
+//             display(message, "There is nothing to pause as the player is not playing.");
+//         }
+//     }
+//     catch (error) {
+//         log("ERROR: Trying to pause music. "+error.message);
+//     }
+//     return;
+// }
 function resume(message) {
     log("Requesting player to resume.");
     try {
