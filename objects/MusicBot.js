@@ -529,6 +529,21 @@ class MusicBot {
         }
         console.log('Finished Stop function.');
     }
+    currentPlaying(message) {
+        console.log("Starting currentPlaying method.");
+        var currentSong;
+        try{
+            const serverQueue = this.queue.get(message.guild.id);
+            console.log('Currently Playing...' + serverQueue.songs[0].title);
+            currentSong = serverQueue.songs[0].title;
+        }
+        catch(error){
+            console.log('Either nothing is playing or error is: ' +error.message);
+            currentSong= 'Nothing is playing.';
+        }
+        console.log("Finishing currentPlaying method.");
+        return currentSong;
+    }
 }
 
 //export MusicBot so other modules can use

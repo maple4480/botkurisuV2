@@ -77,7 +77,7 @@ client.on('message', (message) => {
         musicBot.stop(message);
         return;
     } else if (message.content.startsWith("`song")) {
-        currentPlaying(message, serverQueue);
+        message.channel.send("```"+musicBot.currentPlaying(message)+" is now playing!```" );
         return;
     }
     else if (message.content.startsWith("`repeat")) {
@@ -142,7 +142,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
     }
     else if (emoji.name == '▶️') {
         console.log("user selected play emoji");
-        //eventHandler.emit('resume');
         musicBot.resume();
     }
     else if (emoji.name == '🛑') {
@@ -460,210 +459,19 @@ function skip(message, serverQueue) {
     
 }
 
-// function stop(message, serverQueue) {
-//     log('Entering stop function.');
-//     try {
-//         if (!message.member.voice.channel) return display(message, 'You have to be in a voice channel to stop the music!');
-//         if(!serverQueue) return log('No need to clean any resources.');;
-//         log('Beginning to clean up unused resources.');
 
-//         log('Setting player status to false.');
-//         playerStatus = false;
-
-//         log('Setting repeat to false.');
-//         repeat = false;
-
-//         log('Attempting to leave voice channel.');
-//         serverQueue.voiceChannel.leave();
-
-//         log('Clearing all songs in the queue.');
-//         serverQueue.songs = [];
-
-//         log('Requesting that the current song end.');
-//         eventHandler.emit('stop'); 
-
-//         log('Deleting connection');
-//         queue.delete(message.guild.id);
-
-//         display(message, 'Stop requested.');
-//         log('Completed clean up for unused resources.');
-//     }
-//     catch (err) {
-//         log('ERROR: Unable to stop the music. ' + err.message);
-//         display(message, 'Stop requested. But Unable to complete request.');
-//     }
-//     log('Finished Stop function.');
-// }
-
-// async function play(guild, song) {
-//     log("Starting play method.");
-//     const serverQueue = queue.get(guild.id);
-
-//     if (!song) {
-//         log('No more songs left to play. Changing player status to false.');
-//         playerStatus = false;
-//         // timeoutID = setTimeout(function () {
-//         //     log('Waited long enough, now exiting...');
-//         //     serverQueue.voiceChannel.leave();
-//         //     queue.delete(guild.id);
-//         // }, 50000);
-//         // log("Initiated time out ");
-//         return;
-//     }
-
-//     log(song.title + ' is now playing!');
-
-//     if(numberOfTriesAllowed == tryThisManyTimes){
-//         log("Awaiting currently playing song message to send in discord.");
-//         currentSongPlayingMessage = await textChannel.send('```'+song.title + ' is now playing!```');
-//         log("Trying to set up reacts");
-//         try{
-//             log("React: Trying to set up Pause");
-//             await currentSongPlayingMessage.react("⏸");
-//             log("React: Trying to set up Stop");
-//             await currentSongPlayingMessage.react("🛑");
-//             log("React: Trying to set up Skip");
-//             await currentSongPlayingMessage.react("⏩");
-//             log("React: Trying to set up Repeat");
-//             await currentSongPlayingMessage.react("🔄");
-//         }catch(error){
-//             log("Problem with reacts: "+error.message);
-//         }
-        
-//     }
-    
-
-//     log("Changing status of playerStatus from: "+playerStatus+"\n\tto True.");
-//     playerStatus = true;
-
-//     //Put in try to try to stop: Error: Error parsing info: Unable to retrieve video metadata
-//     //Add filter in ytdl(): Error with dispatcher: Status code: 429
-//     //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
+// function currentPlaying(message, serverQueue) {
+//     log("Starting currentPlaying method.");
 //     try{
-//         const dispatcher = serverQueue.connection.play(await ytdl(song.url, {
-//             filter: format => ['251'],
-//             quality: 'highestaudio',
-//             highWaterMark: 1 << 25
-//         }), { type: 'opus' })
-//             .on('finish', () => {
-//                 log("Current song ended.");
-//                 currentSongPlayingMessage.edit('```'+song.title + ' is finished.```');
-//                 currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-
-//                 log("Checking if anyone is in voice channel.. Checking if I am still in voice channel.");
-//                 if (serverQueue.voiceChannel.members.array().length <= 1
-//                     || serverQueue.voiceChannel.members.get(botID) === undefined) {
-//                     log("No one in voice but me Or...I've been disconnected. Clearing Resources.");
-//                     //Maybe only need to call stop method?
-//                     serverQueue.voiceChannel.leave();
-//                     queue.delete(guild.id);
-//                     log('Resources cleared.');
-//                     return;
-//                 }
-
-//                 log("Repeating is currently: "+repeat);
-//                 if (!repeat) {
-//                     log('Repeat is off! Attempting to play next song.');
-//                     serverQueue.songs.shift();
-//                 }
-//                 else{
-//                     log('Repeat is on! Attempting to play same song.');
-//                     currentSongPlayingMessage.edit('```'+song.title + ' is repeating. Playing again!```');
-//                 }
-//                 play(guild, serverQueue.songs[0]);
-//             })
-//             .on('error', error => {
-//                 log("Error in dispatcher: "+error.message);
-//             });
-
-//         log('Setting song volume to 50%');
-//         dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-
-//         log('Resetting eventHandler to listen to new events.');
-//         eventHandler = new events.EventEmitter(); //Reset eventHandler so all previous .on() will not work.
-    
-//         log('Listening for stop events.');
-//         eventHandler.on('stop', function () {
-//             log("Destroying connection.");
-//             currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-//             dispatcher.end();
-//         });
-
-//         log('Listening for pause events.');
-//         eventHandler.on('pause', async function () {
-//             log("Pausing player.");
-//             dispatcher.pause();
-//             currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-//             currentSongPlayingMessage.edit('```'+song.title + ' is paused.```');
-//             try{
-//                 log("Trying to set up reacts");
-//                 log("React: Trying to set up Play");
-//                 await currentSongPlayingMessage.react("▶️");
-//                 log("React: Trying to set up Stop");
-//                 await currentSongPlayingMessage.react("🛑");
-//                 log("React: Trying to set up Skip");
-//                 await currentSongPlayingMessage.react("⏩");
-//                 log("React: Trying to set up Repeat");
-//                 await currentSongPlayingMessage.react("🔄");
-//             }catch(error){
-//                 log("Problem with reacts: "+error.message);
-//             }
-            
-//         });
-
-//         log('Listening for resume events.');
-//         eventHandler.on('resume', async function () {
-//             log("Resuming player.");
-//             dispatcher.resume();
-//             currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-//             currentSongPlayingMessage.edit('```'+song.title + ' is now playing!```');
-//             try{
-//                 log("Trying to set up reacts");
-//                 log("React: Trying to set up Pause");
-//                 await currentSongPlayingMessage.react("⏸");
-//                 log("React: Trying to set up Stop");
-//                 await currentSongPlayingMessage.react("🛑");
-//                 log("React: Trying to set up Skip");
-//                 await currentSongPlayingMessage.react("⏩");
-//                 log("React: Trying to set up Repeat");
-//                 await currentSongPlayingMessage.react("🔄");
-//             }catch(error){
-//                 log("Problem with reacts: "+error.message);
-//             }
-//         });
-//     }catch(error){
-//         log("Error with dispatcher: "+error.message);
-//         if( tryThisManyTimes >0)
-//         {
-//             tryThisManyTimes=tryThisManyTimes-1;
-//             log("Problem with dispatcher will try again. Number of tries remaining: "+tryThisManyTimes);
-//             play(guild,song);
-            
-//         }
-//         else{
-//             log("Out of tries to play dispatcher.");
-//             currentSongPlayingMessage.edit('```'+song.title + ' is having issues playing. Skipping to next song!```');
-
-//             //Try to play next song.
-//             tryThisManyTimes =numberOfTriesAllowed;
-//             serverQueue.songs.shift();
-//             play(guild, serverQueue.songs[0]);
-//         }
+//         display(message, 'Currently Playing...' + serverQueue.songs[0].title);
+//         log('Currently Playing...' + serverQueue.songs[0].title);
 //     }
-//     log("Finished play method.");
+//     catch(error){
+//         display(message, 'Nothing is playing.');
+//         log('Either nothing is playing or error is: ' +error.message);
+//     }
+//     log("Finishing currentPlaying method.");
 // }
-function currentPlaying(message, serverQueue) {
-    log("Starting currentPlaying method.");
-    try{
-        display(message, 'Currently Playing...' + serverQueue.songs[0].title);
-        log('Currently Playing...' + serverQueue.songs[0].title);
-    }
-    catch(error){
-        display(message, 'Nothing is playing.');
-        log('Either nothing is playing or error is: ' +error.message);
-    }
-    log("Finishing currentPlaying method.");
-}
 function repeatSong(message, serverQueue) {
     log("Starting repeatSong method.");
     try{
@@ -746,45 +554,7 @@ function display(message, text) {
     }
     return;
 }
-// function pause(message) {
-//     log("Requesting player pause.");
-//     try {
-//         if(playerStatus){
-//             log("Confirmed player has been turned on. Now emitting the pause event.");
-//             eventHandler.emit('pause'); 
-//             display(message, "The player has been paused.");
-//         }
-//         else{
-//             log("Confirmed player is off. Refusing to emit pause event.");
-//             display(message, "There is nothing to pause as the player is not playing.");
-//         }
-//     }
-//     catch (error) {
-//         log("ERROR: Trying to pause music. "+error.message);
-//     }
-//     return;
-// }
-// function resume(message) {
-//     log("Requesting player to resume.");
-//     try {
-//         if(playerStatus){
-//             log("Confirmed player has been turned on. Now emitting the resume event.");
-//             eventHandler.emit('resume'); 
-//             // log('Setting player status to false.');
-//             // playerStatus = false;
-//             display(message, "The player will now resume.");
-//         }
-//         else{
-//             log("Confirmed player is off. Refusing to emit resume event.");
-//             display(message, "There is nothing to resume as the player is not playing.");
-//         }
-//     }
-//     catch (error) {
-//         log("ERROR: Trying to resume music.");
-//     }
-    
-//     return;
-// }
+
 function log(msg){
     var DateTime = new Date();
     var hours = DateTime.getHours() % 12;
