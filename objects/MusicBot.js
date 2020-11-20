@@ -393,7 +393,7 @@ class MusicBot {
             });
 
             console.log('Listening for pause events.');
-            this.eventHandler.on('pause', async function () {
+            this.eventHandler.on('pause', function () {
                 console.log("Entering real pause.");
                 dispatcher.pause();
                 
@@ -440,7 +440,7 @@ class MusicBot {
         }
         console.log("Finished play method.");
     }
-    pause() {
+    async pause() {
         console.log("Requesting player pause.");
         try {
             if(this.playerStatus){
