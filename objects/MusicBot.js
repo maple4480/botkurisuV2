@@ -460,11 +460,11 @@ class MusicBot {
             if(this.playerStatus){
                 console.log("Confirmed player has been turned on. Now emitting the pause event.");
                 this.eventHandler.emit('pause'); 
-                currentSongPlayingMessage.edit('```The player has been paused.```');
+                this.currentSongPlayingMessage.edit('```The player has been paused.```');
             }
             else{
                 console.log("Confirmed player is off. Refusing to emit pause event.");
-                currentSongPlayingMessage.edit("There is nothing to pause as the player is not playing.");
+                this.currentSongPlayingMessage.edit("There is nothing to pause as the player is not playing.");
             }
         }
         catch (error) {
