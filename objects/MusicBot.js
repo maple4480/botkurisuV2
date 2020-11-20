@@ -507,6 +507,7 @@ class MusicBot {
             console.log('Setting repeat to false.');
             this.repeat = false;
     
+            //Remove this and put into leave method
             console.log('Attempting to leave voice channel.');
             serverQueue.voiceChannel.leave();
     
