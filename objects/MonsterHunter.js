@@ -59,6 +59,7 @@ class MonsterHunter{
         if(!monster) return "ERROR";
 
         let weaknessList="\n";
+        monster.weaknesses=monster.weaknesses.sort(function(a, b){return b.stars-a.stars});
         for(let i=0;i<monster.weaknesses.length;i++){
             weaknessList+="\t"+this.getStars(monster.weaknesses[i].stars)+' '+monster.weaknesses[i].element+'\n';
         }
