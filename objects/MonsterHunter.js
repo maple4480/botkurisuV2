@@ -48,18 +48,24 @@ class MonsterHunter{
         
 
     }
+    getStars(count){
+        let starList="";
+        for(let i=0; i<count;i++){
+            starList+='⭐️';
+        }
+        return starList;
+    }
     formatMonsterInfo(monster){
         if(!monster) return "ERROR";
 
-        let weaknessList="";
-        let resistanceList="";
+        let weaknessList="\n";
         for(let i=0;i<monster.weaknesses.length;i++){
-            weaknessList+=monster.weaknesses[i].stars+' '+monster.weaknesses[i].element+' ';
+            weaknessList+="\t"+this.getStars(monster.weaknesses[i].stars)+' '+monster.weaknesses[i].element+'\n';
         }
+        let resistanceList="";
         for(let i=0;i<monster.resistances.length;i++){
             resistanceList+=monster.resistances[i].element+' ';
         }
-
 
         let displayString ="```";
         displayString+= 'Name: '+monster.name+'\n';
