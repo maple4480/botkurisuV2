@@ -1,7 +1,5 @@
-
-
 class MusicBot {
-    constructor(GOOGLE_API, SERVICE_ACCOUNT, botID, dbRef) {
+    constructor(GOOGLE_API, botID) {
         this.ytdl = require('ytdl-core-discord');
         const Youtube = require('simple-youtube-api');
         this.youtube = new Youtube(GOOGLE_API);
@@ -9,13 +7,13 @@ class MusicBot {
         this.botID=botID;
 
         //Database
-        const admin = require('firebase-admin');
-        admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(SERVICE_ACCOUNT)),
-            databaseURL: "https://kurisudata.firebaseio.com"
-        });
-        this.db = admin.database();
-        this.userRef = this.db.ref(dbRef);
+        // const admin = require('firebase-admin');
+        // admin.initializeApp({
+        //     credential: admin.credential.cert(JSON.parse(SERVICE_ACCOUNT)),
+        //     databaseURL: "https://kurisudata.firebaseio.com"
+        // });
+        // this.db = admin.database();
+        // this.userRef = this.db.ref(dbRef);
 
         this.queue = new Map();
         this.playerStatus = false; //The player is false when not playing a song. Should be false when: No more songs playing, not in voice channel, paused, stopped
@@ -36,7 +34,7 @@ class MusicBot {
         this.currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
 
     }
-    async execute(message, serverQueue) {
+    async execute(message) {
         console.log('Starting execute method.');
         console.log('Checking my permissions.');
         const voiceChannel = message.member.voice.channel;
@@ -48,51 +46,19 @@ class MusicBot {
         }
         console.log('Correct permissions received!');
 
-        console.log('Cleaning song argument');
-        const args = message.content.split(' ');
-        if (args[1] === undefined) {
-            console.log('No argument received.');
-            return;
-        }
-        const url = args[1].replace(/<(.+)>/g, '$1');
-        const searchString = args.slice(1).join(' ');
-
-        console.log('\targs: ' + args + ' \n\tURL: ' + url + ' \n\tsearchString: ' + searchString + '\nCleaned song argument.');
-        //Currently only allows one youtube video to play.
-        console.log('Attemping to gather information on video.');
-        try {
-            var video = await this.youtube.getVideo(url);
-        }
-        catch (error) {
-            console.log("This may not be a URL link: " + searchString);
-            console.log("Error: " + error.message);
-
-            try {
-                console.log("Attemping to search with arguments: " + searchString);
-                var videos = await this.searchVideos(searchString, 1);
-                var video = await this.youtube.getVideoByID(videos[0].id);
-                console.log("Video found: " + video.id);
-            }
-            catch (err) {
-                console.log("ERROR: No video found with this search string: " + searchString + '\nError: ' + err.message);
-                message.channel.send( 'No video found.');
-                return;
-            }
-        }
-
-        console.log("Generating song information");
-        const song = {
-            id: video.id,
-            title: video.title,
-            url: `https://www.youtube.com/watch?v=${video.id}`
-        };
-
+        const song = await this.getSongInfo(message);
         //Add song to db later
-        // try {
-        //     DB_add(song);
-        // } catch (error) {
-        //     console.log("ERROR unable to update database.");
-        // }
+        try {
+            if(this.db != undefined){
+                console.log("Database was set.. attempting to update.");
+                this.db.addSong(song);
+            } 
+            else{
+                console.log("Database was not defined.");
+            }
+        } catch (error) {
+            console.log("ERROR unable to update database.");
+        }
         console.log('\tsong.id: ' + song.id + ' \n\tsong.title: ' + song.title + ' \n\tsong.url: ' + song.url + "\nGenerated song information");
 
         console.log("Checking if a queue exists for this guild id: " + message.guild.id);
@@ -154,8 +120,8 @@ class MusicBot {
             }
 
             message.channel.send( `${song.title} has been added to the queue!`);
-            return console.log('Finished execute method.');
         }
+        
 
         // ytpl(url, async function (err, playlist) {
         //     if (err) {
@@ -298,6 +264,51 @@ class MusicBot {
         // });
         console.log('Finished execute method.');
     }
+    setDB(database){
+        console.log("Setting database.");
+        this.db = database;
+    }
+    async getSongInfo(message){ //When calling need to: await getSongInfo(message)
+        console.log('Cleaning song argument of: ');
+        const args = message.content.split(' ');
+        if (args[1] === undefined) {
+            console.log('No argument received.');
+            return;
+        }
+        const url = args[1].replace(/<(.+)>/g, '$1');
+        const searchString = args.slice(1).join(' ');
+
+        console.log('\targs: ' + args + ' \n\tURL: ' + url + ' \n\tsearchString: ' + searchString + '\nCleaned song argument.');
+        //Currently only allows one youtube video to play.
+        console.log('Attemping to gather information on video.');
+        try {
+            var video = await this.youtube.getVideo(url);
+        }
+        catch (error) {
+            console.log("This may not be a URL link: " + searchString);
+            console.log("Error: " + error.message);
+
+            try {
+                console.log("Attemping to search with arguments: " + searchString);
+                var videos = await this.youtube.searchVideos(searchString, 1);
+                var video = await this.youtube.getVideoByID(videos[0].id);
+                console.log("Video found: " + video.id);
+            }
+            catch (err) {
+                console.log("ERROR: No video found with this search string: " + searchString + '\nError: ' + err.message);
+                message.channel.send( 'No video found.');
+                return;
+            }
+        }
+
+        console.log("Generating song information");
+        const song = {
+            id: video.id,
+            title: video.title,
+            url: `https://www.youtube.com/watch?v=${video.id}`
+        };
+        return song;
+    }
     
     async play(guild, song) {
         console.log("Starting play method.");
@@ -321,6 +332,10 @@ class MusicBot {
         if (this.numberOfTriesAllowed == this.tryThisManyTimes) {
             console.log("Sending currently playing song to discord ONCE.");
             this.currentSongPlayingMessage = await this.textChannel.send('```' + song.title + ' is now playing!```');
+            if (this.repeat) {
+                this.currentSongPlayingMessage.edit('```🔄' + serverQueue.songs[0].title + ' is now playing!```');
+            }
+
             console.log("Trying to set up reacts");
             try {
                 console.log("React: Trying to set up Pause");
@@ -456,13 +471,14 @@ class MusicBot {
         }
         return;
     }
-    async resume(){
+    async resume(message){
         console.log("Requesting player to resume.");
         try {
             if(this.playerStatus){
+                const serverQueue = this.queue.get(message.guild.id);
                 console.log("Confirmed player has been turned on. Now emitting the resume event.");
                 this.eventHandler.emit('resume'); 
-                
+                this.currentSongPlayingMessage.edit("```The player will now resume.```");
                 this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
                 try {
                     console.log("Trying to set up reacts");
@@ -478,7 +494,6 @@ class MusicBot {
                     console.log("Problem with reacts: " + error.message);
                 }
 
-                this.currentSongPlayingMessage.edit("```The player will now resume.```");
             }
             else{
                 console.log("Confirmed player is off. Refusing to emit resume event.");
@@ -575,7 +590,82 @@ class MusicBot {
         console.log("Sending current player status of: "+this.playerStatus);
         return this.playerStatus;
     }
-    //Work on skipping
+    async repeatSong(message) {
+        console.log("Starting repeatSong method.");
+        try{
+            const serverQueue = this.queue.get(message.guild.id);
+            if(this.playerStatus){ 
+                if (this.repeat) {
+                    console.log("End Repeat of Current Song: "+serverQueue.songs[0].title);
+                    this.repeat = false;
+                    this.currentSongPlayingMessage.edit('```' + serverQueue.songs[0].title + ' is now playing!```');
+                }
+                else {
+                    console.log("Repeating Current Song: "+serverQueue.songs[0].title);
+                    this.repeat = true;
+                    this.currentSongPlayingMessage.edit('```🔄' + serverQueue.songs[0].title + ' is now playing!```');
+                }
+                await this.currentSongPlayingMessage.react("🔄");
+            }
+            else{
+                console.log("Confirmed player is off. Refusing to emit repeat event.");
+                message.channel.send("There is nothing to repeat as the player is not playing.");
+            }
+        }catch(error){
+            console.log("Error with repeatSong method: "+error.message);
+            message.channel.send("Problem with repeat functionality.");
+        }
+        
+        console.log("Finishing repeatSong method.");
+    }
+
+    getQueue(message) {
+        console.log("Starting getQueue method");
+        try {
+            const serverQueue = this.queue.get(message.guild.id);
+            var q = "";
+            for (var i = 0; i < serverQueue.songs.length; i++) {
+                if (i == 0) {
+                    q += '[▶️] ' + serverQueue.songs[i].title + '\n';
+                }
+                else {
+                    q += '[' + i + '] ' + serverQueue.songs[i].title + '\n';
+                }
+                if (i == 10) {
+                    q += '[...' + serverQueue.songs.length+' more]\n';
+                    break;
+                }
+            }
+            console.log('Current Queue:\n' + q + '');
+            return 'Current Queue:\n' + q ;
+        }
+        catch (err) {
+            console.log("Error: Trying to get Queue: "+err.message);
+            return "Queue is Empty";
+        }
+    }
+    shuffle(message) {
+        message.channel.send("Currently is not working.");
+        console.log("Shuffle was called.");
+        // try {
+        //     const serverQueue = this.queue.get(message.guild.id);
+        //     for (let i = serverQueue.songs.length - 1; i > 0; i--) {
+        //         const j = Math.floor(Math.random() * i);
+        //         if (j == 0) {
+        //             continue;
+        //         }
+        //         const temp = serverQueue.songs[i];
+        //         serverQueue.songs[i] = serverQueue.songs[j];
+        //         serverQueue.songs[j] = temp;
+        //     }
+        //     display(message, "Queue has been shuffled.");
+        //     log("Queue shuffling completed.");
+        // }
+        // catch (err) {
+        //     log("ERROR: Unable to shuffle");
+        //     display(message, "There was a problem shuffling.");
+        // }
+    }
 }
 
 //export MusicBot so other modules can use
