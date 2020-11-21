@@ -41,7 +41,11 @@ client.on('message', (message) => {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`mhw")) {
+    } else if (message.content.startsWith("`8ball")) {
+        console.log("8ball command received.");
+        message.channel.send("```"+get8Ball()+"```");
+        return;
+    }else if (message.content.startsWith("`mhw")) {
         console.log("Let mhw take care of this.");
         mhw.getMonsterInfo(message);
         return;
@@ -94,6 +98,7 @@ client.on('message', (message) => {
             \`queue -Displays current queue of songs \n\
             \`shuffle -Shuffles queue of songs \n\
             \`pause -Pauses the current song \n\
+            \`8ball -Returns an answer from 8ball \n\
             \`resume -Will resume music```');
         return;
     }
@@ -159,6 +164,23 @@ async function gatherDataOnOtherBots(message){
         console.log("ERROR unable to update database.");
     }
     console.log("Song information added to database.");
+}
+
+function get8Ball(){
+    try{
+        console.log("Getting answer from 8ball.");
+        let answer = ["As I see it, yes.","Ask again later.",
+            "Better not tell you now.","Cannot predict now.","Don't count on it.",
+            "It is certain.","It is decidely so.","Most likely","My rpely is no",
+            "My sources say no","Outlook not so good","Outlook good","Reply hazy, try again",
+            "Signs point to yes","Very doubtful","Without a doubt","Yes.","Yes - Definitely","You may rely on it."];
+            let select = Math.floor(Math.random() * Math.floor(answer.length));
+            console.log("Answer selected is: "+answer[select]);
+        return answer[select]; 
+    }catch(error){
+        console.log("Problem with get8Ball: "+error.message);
+    }
+    return "Try Again.";
 }
 
 /*************************************************************************************************************************************/
