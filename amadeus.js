@@ -319,7 +319,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 function repeatSong(message, serverQueue) {
     log("Starting repeatSong method.");
     try{
-        if(playerStatus){
+        if(playerStatus){ 
             if (repeat) {
                 log("End Repeat of Current Song: "+serverQueue.songs[0].title);
                 repeat = false;

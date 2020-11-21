@@ -549,7 +549,6 @@ class MusicBot {
         return currentSong;
     }
     //Returns sucesss msg or why it couldn't skip 
-    //Still working on skipping
     skip(message) {
         console.log('Starting skip method.');
         var returnMsg ="";
@@ -576,6 +575,7 @@ class MusicBot {
         console.log("Sending current player status of: "+this.playerStatus);
         return this.playerStatus;
     }
+    //Work on skipping
 }
 
 //export MusicBot so other modules can use
