@@ -336,20 +336,6 @@ class MusicBot {
                 this.currentSongPlayingMessage.edit('```🔄' + serverQueue.songs[0].title + ' is now playing!```');
             }
 
-            console.log("Trying to set up reacts");
-            try {
-                console.log("React: Trying to set up Pause");
-                await this.currentSongPlayingMessage.react("⏸");
-                console.log("React: Trying to set up Stop");
-                await this.currentSongPlayingMessage.react("🛑");
-                console.log("React: Trying to set up Skip");
-                await this.currentSongPlayingMessage.react("⏩");
-                console.log("React: Trying to set up Repeat");
-                await this.currentSongPlayingMessage.react("🔄");
-            } catch (error) {
-                console.log("Problem with reacts: " + error.message);
-            }
-
         }
 
 
@@ -437,6 +423,24 @@ class MusicBot {
                 this.play(guild, serverQueue.songs[0]);
             }
         }
+
+        if (this.numberOfTriesAllowed == this.tryThisManyTimes) {
+            //Put set up reacts here so the player can start playing music FIRST
+            try {
+                console.log("Trying to set up reacts");
+                console.log("React: Trying to set up Pause");
+                await this.currentSongPlayingMessage.react("⏸");
+                console.log("React: Trying to set up Stop");
+                await this.currentSongPlayingMessage.react("🛑");
+                console.log("React: Trying to set up Skip");
+                await this.currentSongPlayingMessage.react("⏩");
+                console.log("React: Trying to set up Repeat");
+                await this.currentSongPlayingMessage.react("🔄");
+            } catch (error) {
+                console.log("Problem with reacts: " + error.message);
+            }
+        }
+
         console.log("Finished play method.");
     }
     async pause() {
