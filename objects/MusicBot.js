@@ -318,12 +318,10 @@ class MusicBot {
             console.log('No more songs left to play. Changing player status to false.');
             //No more songs clear resources but do not leave channel
             this.queue.delete(guild.id);
-            // timeoutID = setTimeout(function () {
-            //     console.log('Waited long enough, now exiting...');
-            //     serverQueue.voiceChannel.leave();
-            //     queue.delete(guild.id);
-            // }, 50000);
-            // console.log("Initiated time out ");
+            //Test this:
+            // if(this.currentSongPlayingMessage){
+            //     this.currentSongPlayingMessage.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+            // }
             return;
         }
 

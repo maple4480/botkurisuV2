@@ -22,6 +22,10 @@ let MusicBot = musicbot.MusicBot;
 let musicBot = new MusicBot(GOOGLE_API,botID);
 musicBot.setDB(db);
 
+let monsterhunter = require("./objects/MonsterHunter");
+let MonsterHunter = monsterhunter.MonsterHunter;
+let mhw = new MonsterHunter();
+
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
 client.on('message', (message) => {
@@ -37,7 +41,11 @@ client.on('message', (message) => {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`skip")) {
+    } else if (message.content.startsWith("`mhw")) {
+        console.log("Let mhw take care of this.");
+        mhw.getMonsterInfo(message);
+        return;
+    }else if (message.content.startsWith("`skip")) {
         console.log("Skipping current song from bot.");
         musicBot.skip(message);
         return;
@@ -152,8 +160,6 @@ async function gatherDataOnOtherBots(message){
     }
     console.log("Song information added to database.");
 }
-
-
 
 /*************************************************************************************************************************************/
 //When application starts do this:

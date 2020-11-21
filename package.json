@@ -4,7 +4,7 @@
   "description": "",
   "main": "MusicBot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +13,12 @@
     "@discordjs/opus": "^0.3.3",
     "discord.js": "^12.4.1",
     "firebase-admin": "^9.4.1",
+    "node-fetch": "^2.6.1",
+    "relevance": "^1.0.5",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core-discord": "^1.2.4"
+  },
+  "devDependencies": {
+    "jasmine": "^3.6.3"
   }
 }
