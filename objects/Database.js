@@ -10,6 +10,7 @@ class Database {
             });
             this.db = admin.database();
             this.userRef = this.db.ref(dbRef);
+            this.currencyRef = this.db.ref(dbRef+"_currency");
         }catch(error){
             console.log("Issue initializing database: "+error.message);
         }
@@ -58,6 +59,118 @@ class Database {
         }catch(error){
             console.log("Error adding song to db: "+error.message);
         }
+    }
+    getCurrency(id){
+        try{
+            console.log("Updating database with new currency");
+            var one = this.currencyRef.child(id);
+            
+            console.log("Scanning database for user ID: "+id);
+        
+            //Check if user exists
+            one.once("value", function(snapshot) {
+                var updatedTotal = amount;
+                //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+                console.log("Database found: "+snapshot.val() );
+                if(snapshot.val() ){
+                    console.log("It exists in the database.");
+                    console.log("Current currency amount is: "+snapshot.val().total);
+                    return snapshot.val().total;
+                }
+                else{ //Null goes here
+                    console.log("It does not exist in the database.");
+                }
+            });
+        }catch(error){
+            console.log("Error adding currency to db: "+error.message);
+        }
+    }
+    async addCurrency(id, amount){ //obj = {id}
+        var updatedTotal = amount;
+        try{
+            console.log("Updating database with new currency");
+            var one = this.currencyRef.child(id);
+            
+            console.log("Scanning database for user ID: "+id);
+        
+            //Check if user exists
+            await this.currencyRef.child(id).once("value", function(snapshot) {
+                //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+                console.log("Database found: "+snapshot.val() );
+                if(snapshot.val() ){
+                    console.log("It exists in the database.");
+                    console.log("Current currency amount is: "+snapshot.val().total);
+                    updatedTotal+=snapshot.val().total;
+                    console.log("Will update the total to: "+updatedTotal);
+                }
+                else{ //Null goes here
+                    console.log("It does not exist in the database.");
+                }
+                var newData = {
+                    id: id,
+                    total: updatedTotal
+                }
+                //Updates the Database
+                console.log("Updating database with new data: id-"+newData.id+" total-"+newData.total);
+                one.update(newData,(err)=>{
+                    if(err){
+                        console.log("Error with update: "+err)
+                    }
+                    else{
+                        console.log("Currency added to database.")
+                    }
+                });
+            });
+            return updatedTotal;
+        }catch(error){
+            console.log("Error adding currency to db: "+error.message);
+        }        
+    }
+    setDailyDate(id,date){
+        console.log("Setting the lastdailydate to: "+date);
+        var newData = {
+            id: id,
+            lastDailyDate: date
+        }
+        //Updates the Database
+        console.log("Updating database with new data: id-"+newData.id+" date-"+newData.lastDailyDate);
+        this.currencyRef.child(id).update(newData,(err)=>{
+            if(err){
+                console.log("Error with update: "+err)
+            }
+            else{
+                console.log("Currency added to database.")
+            }
+        });
+    }
+    async getLastDailyDate(id){
+        try{
+            console.log("Scanning database for user ID: "+id);
+            //Check if user exists
+            let foundDate = null;
+            await this.currencyRef.child(id).once("value", function(snapshot) {
+                //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
+                console.log("Database found: "+snapshot.val() );
+                if(snapshot.val() ){
+                    console.log("It exists in the database.");
+                    console.log("Last daily date: "+snapshot.val().lastDailyDate);
+                    if(snapshot.val().lastDailyDate){
+                        console.log("Return lastdailydate");
+                        foundDate= snapshot.val().lastDailyDate;
+                    }
+                }
+                else{ //Null goes here
+                    console.log("It does not exist in the database.");
+                }
+            });
+            if(foundDate){
+                console.log("Found a date and returning: "+foundDate);
+                return foundDate;
+            }
+            return null;
+        }catch(error){
+            console.log("Error getting date from db: "+error.message);
+        }   
     }
 }
 

@@ -17,6 +17,7 @@ let database = require("./objects/Database");
 let Database = database.Database;
 let db = new Database(SERVICE_ACCOUNT,dbRef);
 
+
 let musicbot = require("./objects/MusicBot");
 let MusicBot = musicbot.MusicBot;
 let musicBot = new MusicBot(GOOGLE_API,botID);
@@ -25,6 +26,10 @@ musicBot.setDB(db);
 let monsterhunter = require("./objects/MonsterHunter");
 let MonsterHunter = monsterhunter.MonsterHunter;
 let mhw = new MonsterHunter();
+
+// let database = require("./objects/Database");
+// let Database = database.Database;
+// let db_currency = new Database_Currency(SERVICE_ACCOUNT,dbRef);
 
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
@@ -41,7 +46,11 @@ client.on('message', (message) => {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`8ball")) {
+    } else if (message.content.startsWith("`daily")) {
+        console.log("Daily command received. Attemping to add 100 coins.");
+        daily(message);       
+        return;
+    }else if (message.content.startsWith("`8ball")) {
         console.log("8ball command received.");
         message.channel.send("```"+get8Ball()+"```");
         return;
@@ -181,6 +190,37 @@ function get8Ball(){
         console.log("Problem with get8Ball: "+error.message);
     }
     return "Try Again.";
+}
+//This will take care of when a user tries to use the daily command.
+function daily(message){
+    let user =message.author.id;
+    //Check if the user has not used the daily command within the last 
+    db.getLastDailyDate(user).then((value)=>{
+        if(value){
+            console.log("A date was found");
+            let lastDailyDate = new Date(value);
+            let after24Hrs = lastDailyDate;
+            after24Hrs.setDate(after24Hrs.getDate()+1);
+            console.log("Last Daily Date is: "+lastDailyDate);
+            console.log("After 24hrs Date is: "+after24Hrs);
+            if ( after24Hrs > Date.now() ){//Compare value and see if the lastdailydate +24hours is > NOW 
+                message.channel.send("```You've already claimed todays daily. Come back on: "+lastDailyDate+"```");
+                return;
+            }
+        }
+        else{//No set date? Means new user. continue 
+            console.log("No date information found. Attempting to give user 100 coins.");
+        }
+        console.log("Granting user 100 coins.");
+        db.addCurrency(user, 100).then((value)=>{
+            rightNow = new Date();
+            message.channel.send("```Received 100 coins! You now have "+value+" coins! ```");
+            console.log("Setting lastdatedaily to: "+rightNow);
+            db.setDailyDate(user, rightNow );
+        });
+        
+    });
+    
 }
 
 /*************************************************************************************************************************************/
