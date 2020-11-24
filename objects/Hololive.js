@@ -1,5 +1,3 @@
-const { ConsoleReporter } = require('jasmine');
-
 class Hololive{
     constructor() {
     }
