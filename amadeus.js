@@ -41,12 +41,15 @@ client.on('message', (message) => {
     }
     if (!message.content.startsWith("`")) return;
 
-
     if (message.content.startsWith("`play")) {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`daily")) {
+    } else if (message.content.startsWith("`flip")) {
+        console.log("Flip command received. Check if correct parameters");
+        flip(message);
+        return;
+    }else if (message.content.startsWith("`daily")) {
         console.log("Daily command received. Attemping to add 100 coins.");
         daily(message);       
         return;
@@ -112,7 +115,7 @@ client.on('message', (message) => {
         return;
     }
     else {
-        message.channel.send('You need to enter a valid command!')
+        message.channel.send('You need to enter a valid command!');
     }
 });
 client.on('messageReactionAdd', async (reaction, user) => {
@@ -180,7 +183,7 @@ function get8Ball(){
         console.log("Getting answer from 8ball.");
         let answer = ["As I see it, yes.","Ask again later.",
             "Better not tell you now.","Cannot predict now.","Don't count on it.",
-            "It is certain.","It is decidely so.","Most likely","My rpely is no",
+            "It is certain.","It is decidely so.","Most likely","My reply is no",
             "My sources say no","Outlook not so good","Outlook good","Reply hazy, try again",
             "Signs point to yes","Very doubtful","Without a doubt","Yes.","Yes - Definitely","You may rely on it."];
             let select = Math.floor(Math.random() * Math.floor(answer.length));
@@ -220,6 +223,65 @@ function daily(message){
         });
         
     });
+    
+}
+function flip(message){
+    console.log("Entering flip method.");
+    try{
+    const user =message.author.id;
+    const args = message.content.split(' ');
+    console.log("The value of args 0 is: "+args[0]);
+    console.log("The value of args 1 is: "+args[1]);
+    console.log("The value of args 2 is: "+args[2]);
+    if (args[1] === undefined || args[2] === undefined ) {
+        message.channel.send('```You need to enter a valid flip command!```');return;
+    }
+    if(isNaN(parseInt(args[1])) ){
+        message.channel.send('```You need to enter a valid bet amount.```');return;
+    }
+    const validArg2Val =["h","t"];
+    if(!validArg2Val.includes(args[2].toLowerCase()) ){
+        message.channel.send('```You need to enter a valid head or tail.```');return;
+    }
+    db.getCurrency(user).then((value)=>{
+        console.log("Value is: "+value);
+        if(value){
+            console.log("Checking if betting amount is > user have");
+            if(parseInt(args[1])>value){
+                message.channel.send('```You do not have that much money! Please bet less than: '+value+'```');
+                return;
+            }
+            console.log("Setting CurrentTotal to: "+value);
+            var currenTot =value;
+            console.log("CurrentTotal is now: "+currenTot);
+
+            const keyToVal = {"h":1,"t":2};
+            const botFlip = Math.floor((Math.random() * 2) + 1); //Get a number from 1-2. 1 is Head, 2 is Tail.
+            console.log("The bot chose: "+botFlip) ;
+            const betAmount = parseInt(args[1]);
+            console.log("The bet amount is: "+betAmount);
+            if(botFlip === keyToVal[args[2].toLowerCase()]){
+                console.log("User win!");
+                db.addCurrency(user, betAmount ).then((value)=>{
+                    message.channel.send("```You win!\nReceived "+betAmount+" coins! You now have "+value+" coins! ```");
+                });
+            }else{
+                console.log("User lost!");
+                db.addCurrency(user, betAmount,0 ).then((value)=>{
+                    message.channel.send("```You lost!\nTaking "+betAmount+" coins! You now have "+value+" coins! ```");
+                });
+            }
+        }else{
+            message.channel.send("```You have no money.```");
+            return;
+        }
+    });
+
+    }catch(error){
+        console.log("There was an issue with the flip command: "+error.message);
+        message.channel.send('```Problem with flipping.```');return;
+    }
+    
     
 }
 

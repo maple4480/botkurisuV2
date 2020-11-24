@@ -60,32 +60,32 @@ class Database {
             console.log("Error adding song to db: "+error.message);
         }
     }
-    getCurrency(id){
+    async getCurrency(id){
         try{
             console.log("Updating database with new currency");
             var one = this.currencyRef.child(id);
-            
+            var currentTot = 0;
             console.log("Scanning database for user ID: "+id);
         
             //Check if user exists
-            one.once("value", function(snapshot) {
-                var updatedTotal = amount;
+            await one.once("value", function(snapshot) {
                 //If it does exist it will return a snapshot.val().url with correct URL otherwise.. it will contain null
                 console.log("Database found: "+snapshot.val() );
                 if(snapshot.val() ){
                     console.log("It exists in the database.");
                     console.log("Current currency amount is: "+snapshot.val().total);
-                    return snapshot.val().total;
+                    currentTot = snapshot.val().total;
                 }
                 else{ //Null goes here
                     console.log("It does not exist in the database.");
                 }
             });
+            return currentTot;
         }catch(error){
             console.log("Error adding currency to db: "+error.message);
         }
     }
-    async addCurrency(id, amount){ //obj = {id}
+    async addCurrency(id, amount,addSub){ //obj = {id}
         var updatedTotal = amount;
         try{
             console.log("Updating database with new currency");
@@ -100,7 +100,12 @@ class Database {
                 if(snapshot.val() ){
                     console.log("It exists in the database.");
                     console.log("Current currency amount is: "+snapshot.val().total);
-                    updatedTotal+=snapshot.val().total;
+                    console.log("Does addSub exist: "+addSub);
+                    if(addSub!==undefined){
+                        updatedTotal=snapshot.val().total - updatedTotal;
+                    }else{
+                        updatedTotal+=snapshot.val().total;
+                    }
                     console.log("Will update the total to: "+updatedTotal);
                 }
                 else{ //Null goes here
