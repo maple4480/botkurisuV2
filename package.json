@@ -19,8 +19,5 @@
     "relevance": "^1.0.5",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core-discord": "^1.2.4"
-  },
-  "devDependencies": {
-    "jasmine": "^3.6.3"
   }
 }
