@@ -27,9 +27,9 @@ let monsterhunter = require("./objects/MonsterHunter");
 let MonsterHunter = monsterhunter.MonsterHunter;
 let mhw = new MonsterHunter();
 
-// let database = require("./objects/Database");
-// let Database = database.Database;
-// let db_currency = new Database_Currency(SERVICE_ACCOUNT,dbRef);
+let hololive = require("./objects/Hololive");
+let Hololive = hololive.Hololive;
+let holo = new Hololive();
 
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
@@ -45,7 +45,14 @@ client.on('message', (message) => {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`flip")) {
+    } else if (message.content.startsWith("`hololive")) {
+        console.log("Hololive command received.");
+        holo.getScheduleList().then((value)=>{
+            const embedResult = processHoloLive(message,value);
+        });
+        
+        return;
+    }else if (message.content.startsWith("`flip")) {
         console.log("Flip command received. Check if correct parameters");
         flip(message);
         return;
@@ -283,6 +290,26 @@ function flip(message){
     }
     
     
+}
+function processHoloLive(message,data){
+    try{
+        
+        var lives = {};
+        for(let i=0;i<data.length;i++){
+            if(data[i].streaming){
+                const embedding = new Discord.MessageEmbed();
+                embedding.setColor('#0099ff');
+                embedding.setTitle(data[i].streamer+' is Live!')
+                embedding.setThumbnail(data[i].livePreviewImage);
+                embedding.setURL(data[i].link);
+                message.channel.send(embedding);
+            }
+        }
+
+    }catch(error){
+        console.log("Unable to process Schedule: "+error.message);
+        message.channel.send('```Problem with hololive.```');return;
+    }
 }
 
 /*************************************************************************************************************************************/

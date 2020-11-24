@@ -11,9 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
-    "discord.js": "^12.4.1",
+    "discord.js": "^12.5.0",
     "firebase-admin": "^9.4.1",
+    "holo-schedule": "^0.3.1",
     "node-fetch": "^2.6.1",
+    "node-html-parser": "^2.0.0",
     "relevance": "^1.0.5",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core-discord": "^1.2.4"
