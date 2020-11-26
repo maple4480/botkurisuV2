@@ -15,13 +15,6 @@ class Hololive{
             var dataLives =JSON.parse(JSON.stringify(lives));
             console.log("ExpectedDate is: "+JSON.stringify(lives));
 
-
-            const date = new Date();
-            const month = date.getMonth() +1;
-            const day = date.getDate();
-            const expectedDate = month+" "+day;
-            console.log("ExpectedDate is: "+expectedDate);
-
             console.log("lives contain: "+lives)
             console.log("dataresult is: "+lives.length);
 

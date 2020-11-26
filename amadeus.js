@@ -31,6 +31,10 @@ let hololive = require("./objects/Hololive");
 let Hololive = hololive.Hololive;
 let holo = new Hololive();
 
+let gensh = require("./objects/Genshin");
+let Genshin = gensh.Genshin;
+let genshin = new Genshin();
+
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
 client.on('message', (message) => {
@@ -45,7 +49,11 @@ client.on('message', (message) => {
         console.log("Let musicBot deal with play");
         musicBot.execute(message);
         return;
-    } else if (message.content.startsWith("`hololive")) {
+    } else if (message.content.startsWith("`genshin 1")) {
+        console.log("Genshin command received.");
+        pulling(message);       
+        return;
+    }else if (message.content.startsWith("`hololive")) {
         console.log("Hololive command received.");
         holo.getScheduleList().then((value)=>{
             const embedResult = processHoloLive(message,value);
@@ -293,9 +301,10 @@ function flip(message){
 }
 function processHoloLive(message,data){
     try{
-        
         var lives = {};
         for(let i=0;i<data.length;i++){
+            var streamStart = new Date(data[i].time);
+            var now = new Date();
             if(data[i].streaming){
                 const embedding = new Discord.MessageEmbed();
                 embedding.setColor('#0099ff');
@@ -304,12 +313,64 @@ function processHoloLive(message,data){
                 embedding.setURL(data[i].link);
                 message.channel.send(embedding);
             }
-        }
 
+        }
+        if(data.length===0){
+            const embedding = new Discord.MessageEmbed();
+            embedding.setColor('#0099ff');
+            embedding.setTitle('No one is live!')
+            message.channel.send(embedding);
+        }
     }catch(error){
         console.log("Unable to process Schedule: "+error.message);
         message.channel.send('```Problem with hololive.```');return;
     }
+}
+function pulling(message){
+    const args = message.content.split(' ');
+    console.log("The value of args 0 is: "+args[0]);
+    console.log("The value of args 1 is: "+args[1]);
+    if (args[1] === undefined) {
+        message.channel.send('```You need to enter a 1 or a 10!```');return;
+    }
+    if(isNaN(parseInt(args[1]) ) ){
+        message.channel.send('```You need to enter a valid a number.```');return;
+    }
+    if( parseInt(args[1])!==1 ){
+        if(parseInt(args[1])!==10){
+            message.channel.send('```You need to enter a valid a number.```');return;
+        }
+    }
+    var embedding = new Discord.MessageEmbed();
+    embedding.setColor('#0099ff');
+  
+    if(parseInt(args[1])===10){//10Pull
+        embedding.setTitle('10 Pull Result');
+        var fourStarOrHigher = false;
+        var fieldsToAdd={};
+        for(let i=0;i<10;i++){
+            var result = genshin.onePull();
+            if(result.rarity>=4){
+                fourStarOrHigher = true;
+            }
+            embedding.addField(result.name,genshin.getStars(result.rarity),true);
+            if(i===9 && !fourStarOrHigher){//If last pull and there is not a four star or higher restart
+                embedding = new Discord.MessageEmbed();
+                embedding.setColor('#0099ff');
+                embedding.setTitle('10 Pull Result');
+                fourStarOrHigher = false;
+                i=-1;
+                console.log("10 pull did not contain one 4* or higher. Regenerating");
+            }
+        }
+
+    }else{//Single Pull
+        embedding.setTitle('1 Pull Result');
+        var result = genshin.onePull();
+        embedding.addField(result.name,genshin.getStars(result.rarity),true);
+    }
+    message.channel.send(embedding);
+    console.log(result);
 }
 
 /*************************************************************************************************************************************/

@@ -13,6 +13,7 @@
     "@discordjs/opus": "^0.3.3",
     "discord.js": "^12.5.0",
     "firebase-admin": "^9.4.1",
+    "genshin-impact-wrapper": "^1.4.3",
     "holo-schedule": "^0.3.1",
     "node-fetch": "^2.6.1",
     "node-html-parser": "^2.0.0",
