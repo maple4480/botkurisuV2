@@ -4,7 +4,9 @@ class Hololive{
     getScheduleList(){
         const fetch = require('node-fetch');
         var lives = (async ()=> {
-            const response = await fetch('https://schedule.hololive.tv/lives/english',
+            // https://schedule.hololive.tv/
+            // https://schedule.hololive.tv/lives/english
+            const response = await fetch('https://schedule.hololive.tv/lives',
                 {   headers: { 'Cookie': 'timezone=America/Los_Angeles',
                                     'Content-Type': 'text/html;charset=UTF-8'},
                 });
