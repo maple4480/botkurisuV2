@@ -12,6 +12,7 @@ class Genshin{
         console.log("Starting init for getting characters.");
         const genshin = require("genshin-impact-wrapper");
         var allCharacters= await genshin.character.getCharacters();
+        console.log("Found this many characters: "+allCharacters.length);
         for(let i=0;i<allCharacters.length;i++){
             console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
             var data = {
