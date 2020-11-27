@@ -302,10 +302,12 @@ function flip(message){
 function processHoloLive(message,data){
     try{
         var lives = {};
+        var anyLives = false;
         for(let i=0;i<data.length;i++){
             var streamStart = new Date(data[i].time);
             var now = new Date();
             if(data[i].streaming){
+                anyLives = true;
                 const embedding = new Discord.MessageEmbed();
                 embedding.setColor('#0099ff');
                 embedding.setTitle(data[i].streamer+' is Live!')
@@ -315,7 +317,7 @@ function processHoloLive(message,data){
             }
 
         }
-        if(data.length===0){
+        if(!anyLives){
             const embedding = new Discord.MessageEmbed();
             embedding.setColor('#0099ff');
             embedding.setTitle('No one is live!')
