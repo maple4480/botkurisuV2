@@ -405,7 +405,7 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     console.log("Automatic check hololive every hour.");
-    setInterval(AutoHololive, 3600000);
+    //setInterval(AutoHololive, 3600000);
 });
 
 client.login(token);
