@@ -86,7 +86,7 @@ class Genshin{
         const fetch = require('node-fetch');
         var HTMLParser = require('node-html-parser');
         
-        console.log("Populating from: "+link);
+        //console.log("Populating from: "+link);
         const response = await fetch( link );
         const body = await response.text();
         var root = HTMLParser.parse(body);
@@ -124,7 +124,7 @@ class Genshin{
         for(let j=0;j<dataFromWeb.length;j++){
             if(dataFromWeb[j]!== undefined){
                 var l =wikiDomain+ dataFromWeb[j].getAttribute('href');
-                console.log("Adding to data_link: "+l);
+                //console.log("Adding to data_link: "+l);
                 data_link.push(l);
             }
         }
