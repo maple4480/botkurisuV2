@@ -4,6 +4,7 @@ const GOOGLE_API = process.env.GOOGLE_API;
 const token = process.env.BOT_TOKEN;
 const dbRef = process.env.DB_REFERENCE;
 const SERVICE_ACCOUNT =process.env.SERVICE_ACCOUNT;
+const BOT_TEXT_CHANNEL = process.env.BOT_TEXT_CHANNEL;
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -376,11 +377,34 @@ function pulling(message){
     console.log(result);
 }
 
+function AutoHololive(){
+    console.log("It is time to check!");
+    holo.getScheduleList().then((data)=>{
+        try{
+            for(let i=0;i<data.length;i++){
+                if(data[i].streaming){
+                    const embedding = new Discord.MessageEmbed();
+                    embedding.setColor('#0099ff');
+                    embedding.setTitle(data[i].streamer+' is Live!')
+                    embedding.setThumbnail(data[i].livePreviewImage);
+                    embedding.setURL(data[i].link);
+                    client.channels.cache.get(BOT_TEXT_CHANNEL).send(embedding);
+                }
+            }
+        }catch(error){
+            console.log("Unable to process Schedule: "+error.message);
+        }
+    });
+}
+
 /*************************************************************************************************************************************/
 //When application starts do this:
 client.on('ready', () => {
     console.log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
+
+    console.log("Automatic check hololive every hour.");
+    setInterval(AutoHololive, 30000);
 });
 
 client.login(token);
