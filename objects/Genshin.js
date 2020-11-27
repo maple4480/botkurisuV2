@@ -9,49 +9,39 @@ class Genshin{
         this.extractFromWiki();
     }
     async init(){
-        console.log("Starting init for getting characters.");
-        const genshin = require("genshin-impact-wrapper");
-        var allCharacters= await genshin.character.getCharacters();
-        console.log("Found this many characters: "+allCharacters.length);
-        for(let i=0;i<allCharacters.length;i++){
-            console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
-            var data = {
-                name: allCharacters[i].name,
-                rarity: allCharacters[i].rarity
-            };
-            if(data.rarity===5){
-                if(data.name==='Traveler'){
-                    console.log("Traveler found. Skipping.");
-                    continue;
-                }
-                this.fiveStarCharacter.push(data);
+        console.log("Starting init method.");
+        const fetch = require('node-fetch');
+        var HTMLParser = require('node-html-parser');
+        
+        //console.log("Populating from: "+link);
+        const response = await fetch( 'https://genshin-impact.fandom.com/wiki/Characters' );
+        const body = await response.text();
+        var root = HTMLParser.parse(body);
+        var rootToTable = root.querySelectorAll('table.article-table tbody');
+        
+        var rows = rootToTable[0].querySelectorAll('tr');
+        console.log("This many characters: "+rows.length);
+        for(let i=1;i<rows.length;i++){
+            var rarity = (rows[i].querySelectorAll('td'))[0].childNodes[0].rawText;
+            var name = (rows[i].querySelectorAll('td'))[2].childNodes[0].rawText;
+            //console.log("Found: "+name);
+            var data ={
+                name: name,
+                rarity: rarity
             }
-            if(data.rarity===4){
+            if(name==='Traveler'){
+                console.log("Traveler found! Skipping.");
+                continue;
+            }
+            if(parseInt(rarity)===5 ){
+                this.fiveStarCharacter.push(data);
+            }else if(parseInt(rarity)===4 ){
                 this.fourStarCharacter.push(data);
             }
+           
         }
-        // (async () => {
-        //     var allCharacters= await genshin.character.getCharacters();
-        //     for(let i=0;i<allCharacters.length;i++){
-        //         console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
-        //         var data = {
-        //             name: allCharacters[i].name,
-        //             rarity: allCharacters[i].rarity
-        //         };
-        //         if(data.rarity===5){
-        //             if(data.name==='Traveler'){
-        //                 console.log("Traveler found. Skipping.");
-        //                 continue;
-        //             }
-        //             this.fiveStarCharacter.push(data);
-        //         }
-        //         if(data.rarity===4){
-        //             this.fourStarCharacter.push(data);
-        //         }
-        //     }
-        //     //console.log(JSON.stringify(this.fiveStar) );
-        // })();
-
+        console.log("There are this many 5* characters: "+this.fiveStarCharacter.length) ;
+        console.log("There are this many 4* characters: "+this.fourStarCharacter.length) ;
     }
     async extractFromWiki(){
         var item_link=[];
