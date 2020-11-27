@@ -381,6 +381,7 @@ function AutoHololive(){
     console.log("It is time to check!");
     holo.getScheduleList().then((data)=>{
         try{
+            client.channels.cache.get(BOT_TEXT_CHANNEL).send("Its time to check whos live!");
             for(let i=0;i<data.length;i++){
                 if(data[i].streaming){
                     const embedding = new Discord.MessageEmbed();
@@ -404,7 +405,7 @@ client.on('ready', () => {
     client.user.setActivity(". For help: `help"); 
 
     console.log("Automatic check hololive every hour.");
-    setInterval(AutoHololive, 30000);
+    setInterval(AutoHololive, 3600000);
 });
 
 client.login(token);
