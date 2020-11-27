@@ -13,6 +13,7 @@ class Genshin{
         (async () => {
             var allCharacters= await this.genshin.character.getCharacters();
             for(let i=0;i<allCharacters.length;i++){
+                console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
                 var data = {
                     name: allCharacters[i].name,
                     rarity: allCharacters[i].rarity
