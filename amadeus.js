@@ -349,6 +349,8 @@ function pulling(message){
         var fourStarOrHigher = false;
         for(let i=0;i<10;i++){
             var result = genshin.onePull();
+            console.log("Result is: "+result);
+            console.log("Pull is: "+result.name+" "+result.rarity);
             if(result.rarity>=4){
                 fourStarOrHigher = true;
             }
