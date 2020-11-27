@@ -3,6 +3,8 @@ class Genshin{
         this.genshin = require("genshin-impact-wrapper");
         this.fiveStar =[];
         this.fourStar =[];
+        this.fiveStarCharacter =[];
+        this.fourStarCharacter =[];
         this.threeStar = [];
         this.init();
         this.extractFromWiki();
@@ -16,10 +18,14 @@ class Genshin{
                     rarity: allCharacters[i].rarity
                 };
                 if(data.rarity===5){
-                    this.fiveStar.push(data);
+                    if(data.name==='Traveler'){
+                        console.log("Traveler found. Skipping.");
+                        continue;
+                    }
+                    this.fiveStarCharacter.push(data);
                 }
                 if(data.rarity===4){
-                    this.fourStar.push(data);
+                    this.fourStarCharacter.push(data);
                 }
             }
             //console.log(JSON.stringify(this.fiveStar) );
@@ -107,8 +113,16 @@ class Genshin{
     onePull(){
         var myPull = this.getRandom(0,1000);
         if(myPull<6){ //getRandom 5*
+            var characterOrWeapon = this.getRandom(0,100);
+            if(characterOrWeapon<75){ //75% chance of being a character
+                return this.fiveStarCharacter[this.getRandom(0,this.fiveStarCharacter.length) ];
+            }
             return this.fiveStar[this.getRandom(0,this.fiveStar.length) ];
         }else if(myPull>=6 && myPull<57){ //getRandom 4*
+            var characterOrWeapon = this.getRandom(0,100);
+            if(characterOrWeapon<75){ //75% chance of being a character
+                return this.fourStarCharacter[this.getRandom(0,this.fourStarCharacter.length) ];
+            }
             return this.fourStar[this.getRandom(0,this.fourStar.length) ];
         }else{//getRandom 3*
             return this.threeStar[this.getRandom(0,this.threeStar.length) ];
