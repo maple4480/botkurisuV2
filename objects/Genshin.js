@@ -1,6 +1,5 @@
 class Genshin{
     constructor() {
-        this.genshin = require("genshin-impact-wrapper");
         this.fiveStar =[];
         this.fourStar =[];
         this.fiveStarCharacter =[];
@@ -10,27 +9,47 @@ class Genshin{
         this.extractFromWiki();
     }
     async init(){
-        (async () => {
-            var allCharacters= await this.genshin.character.getCharacters();
-            for(let i=0;i<allCharacters.length;i++){
-                console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
-                var data = {
-                    name: allCharacters[i].name,
-                    rarity: allCharacters[i].rarity
-                };
-                if(data.rarity===5){
-                    if(data.name==='Traveler'){
-                        console.log("Traveler found. Skipping.");
-                        continue;
-                    }
-                    this.fiveStarCharacter.push(data);
+        console.log("Starting init for getting characters.");
+        const genshin = require("genshin-impact-wrapper");
+        var allCharacters= await genshin.character.getCharacters();
+        for(let i=0;i<allCharacters.length;i++){
+            console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
+            var data = {
+                name: allCharacters[i].name,
+                rarity: allCharacters[i].rarity
+            };
+            if(data.rarity===5){
+                if(data.name==='Traveler'){
+                    console.log("Traveler found. Skipping.");
+                    continue;
                 }
-                if(data.rarity===4){
-                    this.fourStarCharacter.push(data);
-                }
+                this.fiveStarCharacter.push(data);
             }
-            //console.log(JSON.stringify(this.fiveStar) );
-        })();
+            if(data.rarity===4){
+                this.fourStarCharacter.push(data);
+            }
+        }
+        // (async () => {
+        //     var allCharacters= await genshin.character.getCharacters();
+        //     for(let i=0;i<allCharacters.length;i++){
+        //         console.log("Found: "+allCharacters[i].name+" "+allCharacters[i].rarity);
+        //         var data = {
+        //             name: allCharacters[i].name,
+        //             rarity: allCharacters[i].rarity
+        //         };
+        //         if(data.rarity===5){
+        //             if(data.name==='Traveler'){
+        //                 console.log("Traveler found. Skipping.");
+        //                 continue;
+        //             }
+        //             this.fiveStarCharacter.push(data);
+        //         }
+        //         if(data.rarity===4){
+        //             this.fourStarCharacter.push(data);
+        //         }
+        //     }
+        //     //console.log(JSON.stringify(this.fiveStar) );
+        // })();
 
     }
     async extractFromWiki(){
