@@ -347,7 +347,6 @@ function pulling(message){
     if(parseInt(args[1])===10){//10Pull
         embedding.setTitle('10 Pull Result');
         var fourStarOrHigher = false;
-        var fieldsToAdd={};
         for(let i=0;i<10;i++){
             var result = genshin.onePull();
             if(result.rarity>=4){
