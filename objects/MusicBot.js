@@ -1,6 +1,7 @@
 class MusicBot {
     constructor(GOOGLE_API, botID) {
-        this.ytdl = require('ytdl-core-discord');
+        //this.ytdl = require('ytdl-core-discord'); 4/16/2021
+        this.ytdl = require('discord-ytdl-core');
         const Youtube = require('simple-youtube-api');
         this.youtube = new Youtube(GOOGLE_API);
 
@@ -345,6 +346,7 @@ class MusicBot {
         //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
         try {
             const dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
+                opusEncoded: true,
                 filter: format => ['251'],
                 quality: 'highestaudio',
                 highWaterMark: 1 << 25
