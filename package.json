@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
+    "discord-ytdl-core": "^5.0.2",
     "discord.js": "^12.5.0",
     "firebase-admin": "^9.4.1",
     "holo-schedule": "^0.3.1",
