@@ -346,6 +346,7 @@ class MusicBot {
         //https://www.youtube.com/watch?v=uUbTdVZxjig&ab_channel=Yozohhh2014CH13 is not working?
         try {
             const dispatcher = serverQueue.connection.play(await this.ytdl(song.url, {
+                opusEncoded: true,
                 filter: format => ['251'],
                 quality: 'highestaudio',
                 highWaterMark: 1 << 25
