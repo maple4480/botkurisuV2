@@ -383,6 +383,7 @@ function pulling(message){
     console.log(result);
 }
 
+//Currently not using.
 function AutoHololive(){
     console.log("It is time to check!");
     holo.getScheduleList().then((data)=>{
@@ -415,7 +416,7 @@ client.on('ready', () => {
     console.log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
 
-    console.log("Automatic check hololive every hour.");
+    //console.log("Automatic check hololive every hour.");
     //setInterval(AutoHololive, 3600000);
 });
 

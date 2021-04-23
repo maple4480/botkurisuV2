@@ -18,7 +18,7 @@ class Database {
     getTopSongs(){
         try{
             console.log("Trying to get top songs...");
-            return this.userRef.orderByChild('/count');
+            return this.userRef.orderByChild('/count').limitToFirst(10);
 
         }catch(error){
             console.log("Error getting top songs from DB: "+error.message);
