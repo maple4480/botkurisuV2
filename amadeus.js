@@ -406,7 +406,7 @@ function AutoHololive(){
 
 function getTopSongs(message){
     console.log("Checking for top 10 songs..");
-    console.log( database.getTopSongs() ) ;
+    console.log( db.getTopSongs() ) ;
 }
 
 /*************************************************************************************************************************************/
