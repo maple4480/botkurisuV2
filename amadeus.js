@@ -409,12 +409,17 @@ function getTopSongs(message){
     console.log("Checking for top 10 songs..");
 
     db.getTopSongs().then((value)=>{
+        var embedding = new Discord.MessageEmbed();
+        embedding.setColor('#0099ff');
+
         if(value){
             var songList = value;
             songList.forEach((currentVal) =>{
                 console.log( currentVal.title);
+                embedding.addField(currentVal.title,currentVal.count,true);
             });
         }
+        message.channel.send(embedding);
     });
 }
 
