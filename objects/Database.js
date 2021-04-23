@@ -15,18 +15,19 @@ class Database {
             console.log("Issue initializing database: "+error.message);
         }
     }
-    getTopSongs(){
+    async getTopSongs(){
         try{
             console.log("Trying to get top songs...");
             var queryRef = this.userRef.orderByChild('/count').limitToFirst(10);
-            queryRef.on("value",function(querySnap){
-                var songList = [];
+            var songList = [];
+            await queryRef.once("value",function(querySnap){
                 querySnap.forEach(function(snapshot){
                     //Add snapshot.title to songList
                     songList.push(snapshot.title);
                 });
                 return songList;
             });
+            
         }catch(error){
             console.log("Error getting top songs from DB: "+error.message);
         }
