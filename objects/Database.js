@@ -15,7 +15,7 @@ class Database {
             console.log("Issue initializing database: "+error.message);
         }
     }
-    getTopSong(){
+    getTopSongs(){
         try{
             console.log("Trying to get top songs...");
             return this.userRef.orderByChild('/count');
