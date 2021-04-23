@@ -411,6 +411,9 @@ function getTopSongs(message){
     db.getTopSongs().then((value)=>{
         if(value){
             var songList = value;
+            songList.forEach((currentVal) =>{
+                console.log( currentVal.title);
+            });
         }
     });
 }
