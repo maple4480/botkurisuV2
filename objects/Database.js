@@ -18,8 +18,15 @@ class Database {
     getTopSongs(){
         try{
             console.log("Trying to get top songs...");
-            return this.userRef.orderByChild('/count').limitToFirst(10);
-
+            var queryRef = this.userRef.orderByChild('/count').limitToFirst(10);
+            queryRef.on("value",function(querySnap){
+                var songList = [];
+                querySnap.forEach(function(snapshot){
+                    //Add snapshot.title to songList
+                    songList.push(snapshot.title);
+                });
+            });
+            return songList;
         }catch(error){
             console.log("Error getting top songs from DB: "+error.message);
         }
