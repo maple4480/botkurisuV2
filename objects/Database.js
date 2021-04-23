@@ -25,9 +25,8 @@ class Database {
                     //Add snapshot.title to songList
                     songList.push(snapshot.title);
                 });
-                return songList;
             });
-            
+            return songList;
         }catch(error){
             console.log("Error getting top songs from DB: "+error.message);
         }
