@@ -36,6 +36,7 @@ let gensh = require("./objects/Genshin");
 let Genshin = gensh.Genshin;
 let genshin = new Genshin();
 
+const EMBED_MSG_COLOR = '#0099ff';
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
 client.on('message', (message) => {
@@ -113,6 +114,11 @@ client.on('message', (message) => {
     else if (message.content.startsWith("`resume")) {
         console.log("Let musicBot deal with resume");
         musicBot.resume(message);
+        return;
+    }
+    else if (message.content.startsWith("`top")) {
+        console.log("Let database get top 10");
+        getTopSongs(message);
         return;
     }
     else if (message.content.startsWith("`help")) {
@@ -310,7 +316,7 @@ function processHoloLive(message,data){
             if(data[i].streaming){
                 anyLives = true;
                 const embedding = new Discord.MessageEmbed();
-                embedding.setColor('#0099ff');
+                embedding.setColor(EMBED_MSG_COLOR);
                 embedding.setTitle(data[i].streamer+' is Live!')
                 embedding.setThumbnail(data[i].livePreviewImage);
                 embedding.setURL(data[i].link);
@@ -320,7 +326,7 @@ function processHoloLive(message,data){
         }
         if(!anyLives){
             const embedding = new Discord.MessageEmbed();
-            embedding.setColor('#0099ff');
+            embedding.setColor(EMBED_MSG_COLOR);
             embedding.setTitle('No one is live!')
             message.channel.send(embedding);
         }
@@ -396,6 +402,11 @@ function AutoHololive(){
             console.log("Unable to process Schedule: "+error.message);
         }
     });
+}
+
+function getTopSongs(message){
+    console.log("Checking for top 10 songs..");
+    console.log( database.getTopSongs() ) ;
 }
 
 /*************************************************************************************************************************************/

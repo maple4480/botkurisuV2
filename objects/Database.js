@@ -15,6 +15,15 @@ class Database {
             console.log("Issue initializing database: "+error.message);
         }
     }
+    getTopSong(){
+        try{
+            console.log("Trying to get top songs...");
+            return this.userRef.orderByChild('/count');
+
+        }catch(error){
+            console.log("Error getting top songs from DB: "+error.message);
+        }
+    }
     addSong(obj){
         try{
             console.log("Updating database with new song information.");
