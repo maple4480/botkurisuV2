@@ -407,7 +407,12 @@ function AutoHololive(){
 
 function getTopSongs(message){
     console.log("Checking for top 10 songs..");
-    console.log( db.getTopSongs() ) ;
+
+    db.getTopSongs().then((value)=>{
+        if(value){
+            var songList = value;
+        }
+    });
 }
 
 /*************************************************************************************************************************************/
