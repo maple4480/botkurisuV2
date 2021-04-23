@@ -24,7 +24,7 @@ class Database {
                 querySnap.forEach(function(snapshot){
                     console.log("Adding to song list: "+ snapshot.val().title);
                     var data ={
-                        name: snapshot.val().title,
+                        title: snapshot.val().title,
                         count: snapshot.val().count,
                         url: snapshot.val().url
                     }
