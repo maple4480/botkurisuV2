@@ -26,6 +26,7 @@ class Database {
                     songList.push(snapshot.title);
                 });
             });
+            console.log("This is my songList now: "+songList);
             return songList;
         }catch(error){
             console.log("Error getting top songs from DB: "+error.message);
