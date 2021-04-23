@@ -17,8 +17,9 @@ class Database {
     }
     async getTopSongs(){
         try{
+            const MAX_SONGS_TO_GET = 9;
             console.log("Trying to get top songs...");
-            var queryRef = this.userRef.orderByChild('count').limitToLast(10);
+            var queryRef = this.userRef.orderByChild('count').limitToLast(MAX_SONGS_TO_GET);
             var songList = [];
             await queryRef.once("value",function(querySnap){
                 querySnap.forEach(function(snapshot){
