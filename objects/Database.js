@@ -22,9 +22,13 @@ class Database {
             var songList = [];
             await queryRef.once("value",function(querySnap){
                 querySnap.forEach(function(snapshot){
-                    //Add snapshot.title to songList
                     console.log("Adding to song list: "+ snapshot.val().title);
-                    songList.push(snapshot.val().title);
+                    var data ={
+                        name: snapshot.val().title,
+                        count: snapshot.val().count,
+                        url: snapshot.val().url
+                    }
+                    songList.push(data);
                 });
             });
             console.log("This is my songList now: "+songList);
