@@ -411,7 +411,7 @@ function getTopSongs(message){
     db.getTopSongs().then((value)=>{
         var embedding = new Discord.MessageEmbed();
         embedding.setColor('#0099ff');
-        embedding.setTitle('The top 10 played songs are: ')
+        embedding.setTitle('The top 9 played songs are: ')
 
         if(value){
             var songList = value;
