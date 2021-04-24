@@ -15,6 +15,29 @@ class Database {
             console.log("Issue initializing database: "+error.message);
         }
     }
+    async getTopSongs(){
+        try{
+            const MAX_SONGS_TO_GET = 9;
+            console.log("Trying to get top songs...");
+            var queryRef = this.userRef.orderByChild('count').limitToLast(MAX_SONGS_TO_GET);
+            var songList = [];
+            await queryRef.once("value",function(querySnap){
+                querySnap.forEach(function(snapshot){
+                    console.log("Adding to song list: "+ snapshot.val().title);
+                    var data ={
+                        title: snapshot.val().title,
+                        count: snapshot.val().count,
+                        url: snapshot.val().url
+                    }
+                    songList.push(data);
+                });
+            });
+            console.log("This is my songList now: "+songList);
+            return songList;
+        }catch(error){
+            console.log("Error getting top songs from DB: "+error.message);
+        }
+    }
     addSong(obj){
         try{
             console.log("Updating database with new song information.");

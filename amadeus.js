@@ -36,6 +36,7 @@ let gensh = require("./objects/Genshin");
 let Genshin = gensh.Genshin;
 let genshin = new Genshin();
 
+const EMBED_MSG_COLOR = '#0099ff';
 /*************************************************************************************************************************************/
 //What to do when receive Messages:
 client.on('message', (message) => {
@@ -113,6 +114,11 @@ client.on('message', (message) => {
     else if (message.content.startsWith("`resume")) {
         console.log("Let musicBot deal with resume");
         musicBot.resume(message);
+        return;
+    }
+    else if (message.content.startsWith("`top")) {
+        console.log("Let database get top 10");
+        getTopSongs(message);
         return;
     }
     else if (message.content.startsWith("`help")) {
@@ -310,7 +316,7 @@ function processHoloLive(message,data){
             if(data[i].streaming){
                 anyLives = true;
                 const embedding = new Discord.MessageEmbed();
-                embedding.setColor('#0099ff');
+                embedding.setColor(EMBED_MSG_COLOR);
                 embedding.setTitle(data[i].streamer+' is Live!')
                 embedding.setThumbnail(data[i].livePreviewImage);
                 embedding.setURL(data[i].link);
@@ -320,7 +326,7 @@ function processHoloLive(message,data){
         }
         if(!anyLives){
             const embedding = new Discord.MessageEmbed();
-            embedding.setColor('#0099ff');
+            embedding.setColor(EMBED_MSG_COLOR);
             embedding.setTitle('No one is live!')
             message.channel.send(embedding);
         }
@@ -377,6 +383,7 @@ function pulling(message){
     console.log(result);
 }
 
+//Currently not using.
 function AutoHololive(){
     console.log("It is time to check!");
     holo.getScheduleList().then((data)=>{
@@ -398,13 +405,32 @@ function AutoHololive(){
     });
 }
 
+function getTopSongs(message){
+    console.log("Checking for top 10 songs..");
+
+    db.getTopSongs().then((value)=>{
+        var embedding = new Discord.MessageEmbed();
+        embedding.setColor('#0099ff');
+        embedding.setTitle('The top 9 played songs are: ')
+
+        if(value){
+            var songList = value;
+            songList.forEach((currentVal) =>{
+                console.log( currentVal.title);
+                embedding.addField(currentVal.title,currentVal.count,true);
+            });
+        }
+        message.channel.send(embedding);
+    });
+}
+
 /*************************************************************************************************************************************/
 //When application starts do this:
 client.on('ready', () => {
     console.log('Bot is ready...Awaiting Input!');
     client.user.setActivity(". For help: `help"); 
 
-    console.log("Automatic check hololive every hour.");
+    //console.log("Automatic check hololive every hour.");
     //setInterval(AutoHololive, 3600000);
 });
 

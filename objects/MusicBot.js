@@ -29,7 +29,7 @@ class MusicBot {
 
 
         //If dispatcher errors out will try this many number of times before giving up.
-        this.numberOfTriesAllowed = 10;
+        this.numberOfTriesAllowed = 1;
         this.tryThisManyTimes = this.numberOfTriesAllowed;
 
         this.currentSongPlayingMessage; //Contains a reference to the message that is sent to discored on every song play.
