@@ -11,7 +11,7 @@ class ClashOfClan{
 
         tokenReq.open("GET", base, true); 
 
-        tokenReq.setRequestHeader("Authorization", "Bearer "+AUTHORIZATION_TOKEN);
+        tokenReq.setRequestHeader("Authorization", "Bearer "+this.AUTHORIZATION_TOKEN);
 
         tokenReq.addEventListener("load", ()=>{
             if(tokenReq.status >= 200 && tokenReq.status < 400){
