@@ -20,6 +20,7 @@
     "node-html-parser": "^2.0.0",
     "relevance": "^1.0.5",
     "simple-youtube-api": "^5.2.1",
+    "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^4.5.0"
   },
   "devDependencies": {}
