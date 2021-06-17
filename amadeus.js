@@ -5,6 +5,7 @@ const token = process.env.BOT_TOKEN;
 const dbRef = process.env.DB_REFERENCE;
 const SERVICE_ACCOUNT =process.env.SERVICE_ACCOUNT;
 const BOT_TEXT_CHANNEL = process.env.BOT_TEXT_CHANNEL;
+const COC_AUTHORIZATION_TOKEN = process.env.COC_AUTHORIZATION_TOKEN;
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -35,6 +36,10 @@ let holo = new Hololive();
 let gensh = require("./objects/Genshin");
 let Genshin = gensh.Genshin;
 let genshin = new Genshin();
+
+let clashOfClan = require("./objects/ClashOfClan");
+let ClashOfClan = clashOfClan.ClashOfClan;
+let coc = new ClashOfClan(COC_AUTHORIZATION_TOKEN);
 
 const EMBED_MSG_COLOR = '#0099ff';
 /*************************************************************************************************************************************/
@@ -119,6 +124,11 @@ client.on('message', (message) => {
     else if (message.content.startsWith("`top")) {
         console.log("Let database get top 10");
         getTopSongs(message);
+        return;
+    }
+    else if (message.content.startsWith("`coc")) {
+        console.log("Getting clash of clan information.");
+        getCOCPlayerInformation(message);
         return;
     }
     else if (message.content.startsWith("`help")) {
@@ -420,6 +430,19 @@ function getTopSongs(message){
                 embedding.addField(currentVal.title,currentVal.count,true);
             });
         }
+        message.channel.send(embedding);
+    });
+}
+
+function getCOCPlayerInformation(message){
+    console.log("Enter getCOCPlayerInformation ..");
+
+    coc.getPlayerInfo().then((value)=>{
+        var embedding = new Discord.MessageEmbed();
+        embedding.setColor('#0099ff');
+        embedding.setTitle('COC information on: ')
+
+        embedding.setDescription(value);
         message.channel.send(embedding);
     });
 }
