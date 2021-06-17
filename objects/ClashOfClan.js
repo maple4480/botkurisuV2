@@ -3,7 +3,7 @@ class ClashOfClan{
         this.AUTHORIZATION_TOKEN = AUTHORIZATION_TOKEN;
     }
     
-    getPlayerInfo(){
+    async getPlayerInfo(){
         var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
         var tokenReq = new XMLHttpRequest();
@@ -16,7 +16,9 @@ class ClashOfClan{
         tokenReq.addEventListener("load", ()=>{
             if(tokenReq.status >= 200 && tokenReq.status < 400){
                var response = JSON.parse(tokenReq.responseText);
-               return response;
+               const promise1 = new Promise((resolve, reject) => {
+                resolve(response);
+              });
             }
             else{
                 console.log("Network error: "+tokenReq.status); 
